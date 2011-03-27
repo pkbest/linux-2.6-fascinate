@@ -40,6 +40,7 @@ rm -rf fascinate_voodoo5
 	-u -w
 
 cd $WORK
+rm -f zImage
 make clean mrproper
 make ARCH=arm jt1134_defconfig
 make -j8 CROSS_COMPILE=../arm-2009q3/bin/arm-none-linux-gnueabi- \
