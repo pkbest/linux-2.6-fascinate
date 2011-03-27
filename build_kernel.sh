@@ -40,12 +40,14 @@ rm -rf fascinate_voodoo5
 	-u -w
 
 cd $WORK
-rm -f zImage
+rm -f kernel_update.zip
 make clean mrproper
 make ARCH=arm jt1134_defconfig
 make -j8 CROSS_COMPILE=../arm-2009q3/bin/arm-none-linux-gnueabi- \
 	ARCH=arm HOSTCFLAGS="-g -O3"
 
-cp -p arch/arm/boot/zImage . 
-ls -l zImage
+cp -p arch/arm/boot/zImage update/kernel_update
+cd update
+zip -r -q kernel_update.zip . 
+mv kernel_update.zip ../
 
