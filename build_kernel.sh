@@ -18,31 +18,41 @@ if [ ! -d fascinate_initramfs ]; then
 	cd ..
 fi
 
-if [ ! -d lagfix ]; then
-	git clone git://github.com/project-voodoo/lagfix.git
-fi
-
-if [ ! -d cwm_voodoo ]; then
-	git clone git://github.com/jt1134/cwm_voodoo.git
-fi
-
-if [ ! -f lagfix/stages_builder/stages/stage1.tar ] || \
-	[ ! -f lagfix/stages_builder/stages/stage2.tar.lzma ] || \
-	[ ! -f lagfix/stages_builder/stages/stage3-sound.tar.lzma ]; then
-	cd lagfix/stages_builder
-	rm -f stages/stage*
-	./scripts/download_precompiled_stages.sh
-	cd ../../
-fi
-
 rm -rf fascinate_voodoo5
-./lagfix/voodoo_injector/generate_voodoo_initramfs.sh \
-	-s fascinate_initramfs \
-	-d fascinate_voodoo5 \
-	-p lagfix/voodoo_initramfs_parts \
-	-t lagfix/stages_builder/stages \
-	-c cwm_voodoo \
-	-u -w
+# you haz balls?
+if [ "$1" != "n00b" ]; then
+	echo "##### Winning! #####"
+	tag="voodoo"
+	if [ ! -d lagfix ]; then
+		git clone git://github.com/project-voodoo/lagfix.git
+	fi
+
+	if [ ! -d cwm_voodoo ]; then
+		git clone git://github.com/jt1134/cwm_voodoo.git
+	fi
+
+	if [ ! -f lagfix/stages_builder/stages/stage1.tar ] || \
+		[ ! -f lagfix/stages_builder/stages/stage2.tar.lzma ] || \
+		[ ! -f lagfix/stages_builder/stages/stage3-sound.tar.lzma ]; then
+		cd lagfix/stages_builder
+		rm -f stages/stage*
+		./scripts/download_precompiled_stages.sh
+		cd ../../
+	fi
+
+	./lagfix/voodoo_injector/generate_voodoo_initramfs.sh \
+		-s fascinate_initramfs \
+		-d fascinate_voodoo5 \
+		-p lagfix/voodoo_initramfs_parts \
+		-t lagfix/stages_builder/stages \
+		-c cwm_voodoo \
+		-u -w
+else
+	tag="novoodoo"
+	rm -rf fascinate_initramfs/.git
+	mkdir fascinate_voodoo5
+	mv fascinate_initramfs fascinate_voodoo5/full-uncompressed
+fi
 
 cd $WORK
 rm -f kernel_update.zip
@@ -54,5 +64,5 @@ make -j8 CROSS_COMPILE=../arm-2009q3/bin/arm-none-linux-gnueabi- \
 cp -p arch/arm/boot/zImage update/kernel_update
 cd update
 zip -r -q kernel_update.zip . 
-mv kernel_update.zip ../
+mv kernel_update.zip ../kernel_update-"$tag".zip
 
