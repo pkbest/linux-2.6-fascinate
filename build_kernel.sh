@@ -22,6 +22,10 @@ if [ ! -d lagfix ]; then
 	git clone git://github.com/project-voodoo/lagfix.git
 fi
 
+if [ ! -d cwm_voodoo ]; then
+	git clone git://github.com/jt1134/cwm_voodoo.git
+fi
+
 if [ ! -f lagfix/stages_builder/stages/stage1.tar ] || \
 	[ ! -f lagfix/stages_builder/stages/stage2.tar.lzma ] || \
 	[ ! -f lagfix/stages_builder/stages/stage3-sound.tar.lzma ]; then
@@ -37,6 +41,7 @@ rm -rf fascinate_voodoo5
 	-d fascinate_voodoo5 \
 	-p lagfix/voodoo_initramfs_parts \
 	-t lagfix/stages_builder/stages \
+	-c cwm_voodoo \
 	-u -w
 
 cd $WORK
