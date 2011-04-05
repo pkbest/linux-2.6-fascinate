@@ -27,10 +27,6 @@ if [ "$1" != "n00b" ]; then
 		git clone git://github.com/project-voodoo/lagfix.git
 	fi
 
-	if [ ! -d cwm_voodoo ]; then
-		git clone git://github.com/jt1134/cwm_voodoo.git
-	fi
-
 	if [ ! -f lagfix/stages_builder/stages/stage1.tar ] || \
 		[ ! -f lagfix/stages_builder/stages/stage2.tar.lzma ] || \
 		[ ! -f lagfix/stages_builder/stages/stage3-sound.tar.lzma ]; then
