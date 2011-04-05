@@ -45,7 +45,6 @@ if [ "$1" != "n00b" ]; then
 		-d fascinate_voodoo5 \
 		-p lagfix/voodoo_initramfs_parts \
 		-t lagfix/stages_builder/stages \
-		-c cwm_voodoo \
 		-u -w
 else
 	tag="novoodoo"
