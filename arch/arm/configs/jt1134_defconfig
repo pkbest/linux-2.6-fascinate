@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.32.9
-# Thu Apr  7 22:22:12 2011
+# Thu Apr  7 22:50:38 2011
 #
 CONFIG_ARM=y
 CONFIG_S5PV210_ATLAS=y
@@ -898,7 +898,36 @@ CONFIG_NETDEVICES=y
 CONFIG_TUN=m
 # CONFIG_VETH is not set
 # CONFIG_ARCNET is not set
-# CONFIG_NET_ETHERNET is not set
+# CONFIG_PHYLIB is not set
+CONFIG_NET_ETHERNET=y
+# CONFIG_MII is not set
+# CONFIG_AX88796 is not set
+# CONFIG_HAPPYMEAL is not set
+# CONFIG_SUNGEM is not set
+# CONFIG_CASSINI is not set
+# CONFIG_NET_VENDOR_3COM is not set
+# CONFIG_SMC91X is not set
+# CONFIG_DM9000 is not set
+# CONFIG_ENC28J60 is not set
+# CONFIG_ETHOC is not set
+# CONFIG_SMC911X is not set
+# CONFIG_SMSC911X is not set
+# CONFIG_DNET is not set
+# CONFIG_NET_TULIP is not set
+# CONFIG_HP100 is not set
+# CONFIG_IBM_NEW_EMAC_ZMII is not set
+# CONFIG_IBM_NEW_EMAC_RGMII is not set
+# CONFIG_IBM_NEW_EMAC_TAH is not set
+# CONFIG_IBM_NEW_EMAC_EMAC4 is not set
+# CONFIG_IBM_NEW_EMAC_NO_FLOW_CTRL is not set
+# CONFIG_IBM_NEW_EMAC_MAL_CLR_ICINTSTAT is not set
+# CONFIG_IBM_NEW_EMAC_MAL_COMMON_ERR is not set
+# CONFIG_NET_PCI is not set
+# CONFIG_B44 is not set
+# CONFIG_KS8842 is not set
+# CONFIG_KS8851 is not set
+# CONFIG_KS8851_MLL is not set
+# CONFIG_ATL2 is not set
 CONFIG_NETDEV_1000=y
 # CONFIG_ACENIC is not set
 # CONFIG_DL2K is not set
@@ -1649,7 +1678,8 @@ CONFIG_USB_ANDROID_ATLAS=y
 # CONFIG_USB_ANDROID_ACM is not set
 CONFIG_USB_ANDROID_ADB=y
 CONFIG_USB_ANDROID_MASS_STORAGE=y
-# CONFIG_USB_ANDROID_RNDIS is not set
+CONFIG_USB_ANDROID_RNDIS=y
+CONFIG_USB_ANDROID_RNDIS_WCEIS=y
 # CONFIG_USB_CDC_COMPOSITE is not set
 
 #
