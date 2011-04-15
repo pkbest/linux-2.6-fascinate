@@ -454,12 +454,6 @@ static int s3cfb_map_video_memory(struct fb_info *fb)
 			 "size: 0x%08x\n", win->id,
 			 (unsigned int)fix->smem_start,
 			 (unsigned int)fb->screen_base, fix->smem_len);
-	/* 
-	 * Changing the Frame Buffer start address, since dma_allocated FB is at fb->smem_start
-	 */
-		writel(fix->smem_start, fbdev->regs + S3C_VIDW00ADD0B0);
-		writel(fix->smem_start + (800*992*4), fbdev->regs + S3C_VIDW00ADD1B0);
-		printk("Changing Frame Buffer address to %x\n", fix->smem_start);
 
 	win->owner = DMA_MEM_FIMD;
 

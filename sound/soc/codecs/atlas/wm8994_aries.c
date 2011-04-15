@@ -1070,8 +1070,8 @@ void wm8994_record_main_mic(struct snd_soc_codec *codec)
     
         wm8994_write(codec, 0x0018, 0x011F);    // Left Line Input 1&2 volume 
         wm8994_write(codec, 0x0029, 0x0020);    // Input Mixer 3
-        wm8994_write(codec, 0x0400, 0x01C6);    // AIF1 ADC1 Left Volume
-        wm8994_write(codec, 0x0401, 0x01C6);    // AIF1 ADC1 Right Volume
+        wm8994_write(codec, 0x0400, 0x01CA);    // AIF1 ADC1 Left Volume
+        wm8994_write(codec, 0x0401, 0x01CA);    // AIF1 ADC1 Right Volume
     	wm8994_write(codec, 0x0410, 0x1800);    // AIF1 DRC 1(5)
     	wm8994_write(codec, 0x0028, 0x0010);    // Input Mixer 2. Single Ended Input. Negative is connected only.
     	wm8994_write(codec, 0x0004, 0x0202);    // Power Management 4
@@ -1724,7 +1724,7 @@ void wm8994_set_voicecall_receiver(struct snd_soc_codec *codec)
     /* Input Path Volume */
     if(loopback_mode == LOOPBACK_MODE_OFF)
     {
-        wm8994_write(codec, 0x0018, 0x0110);   //HYH_20100820 : -9dB  // Left Line Input 1&2 Volume
+        wm8994_write(codec, 0x0018, 0x0116);    // Left Line Input 1&2 Volume
         wm8994_write(codec, 0x0500, 0x01C0);    // AIF2 ADC Left Volume
         wm8994_write(codec, 0x0612, 0x01C0);    // DAC2 Left Volume
         wm8994_write(codec, 0x0603, 0x000C);    // DAC2 Mixer Volumes

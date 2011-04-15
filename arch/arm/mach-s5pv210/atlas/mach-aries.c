@@ -3255,6 +3255,8 @@ static int ldo38_control(int module, bool onoff)
             msleep(1);
             Set_MAX8998_PM_REG(ELDO8, 1);
             msleep(1);
+            Set_MAX8998_PM_REG(ELDO3, 1);
+            msleep(1);
         }
         printk(KERN_INFO "%s : turn ON LDO3 and LDO8 (cur_stat=%d, req=%d)\n",__func__,ldo38_onoff_state,module);
         ldo38_onoff_state |= module;

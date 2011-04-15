@@ -37,6 +37,9 @@
 #include <plat/regs-mfc.h>
 #include <asm/cacheflush.h>
 
+#include <mach/map.h>
+#include <plat/map-s5p.h>
+
 #include "mfc_opr.h"
 #include "../mfc_logmsg.h"
 #include "../mfc_memory.h"
@@ -799,8 +802,7 @@ MFC_ERROR_CODE mfc_init_hw()
 	unsigned int fw_version;
 	unsigned int mc_status;
 
-	void __iomem *chipID_sfr_base_vaddr;
-	unsigned int nChipType = 0;
+	unsigned long idcode;
 	int nIntrRet = 0;
 
 #if	ENABLE_PROTECT_INTR_TIMEOUT_ERR
@@ -812,21 +814,11 @@ MFC_ERROR_CODE mfc_init_hw()
 	/*
 	 * 0-1. Check Type
 	 */
-	chipID_sfr_base_vaddr = ioremap(0xE0000000, 0x1000);
-	
-	if(chipID_sfr_base_vaddr != NULL)
-	{
-		nChipType = readl(chipID_sfr_base_vaddr);
-		if((nChipType & 0x0F) == 0x02)
-			mCheckType = false;
-		else
-			mCheckType = true;
-	}
+	idcode = readl(S5P_VA_CHIPID);
+	if ((idcode & 0x0F) == 0x02)
+		mCheckType = false;
 	else
-	{
-			mCheckType = false;
-	}
-
+                mCheckType = true;
 	
 #if	ENABLE_FW_RELOAD_FOR_TIMEOUT
 		//if( READL(0x58) == 0x00)

@@ -500,7 +500,7 @@ static int s3c_pm_enter(suspend_state_t state)
 	s3c_pm_set_eint(22, 0x2); // power key
 	s3c_pm_set_eint(23, 0x2); // microusb
 	s3c_pm_set_eint(25, 0x4); // volume down
-	s3c_pm_set_eint(27, 0x4); // volume up
+	s3c_pm_set_eint(26, 0x4); // volume up
 	s3c_pm_set_eint(28, 0x4); // T_FLASH_DETECT
 	//s3c_pm_set_eint(29, 0x4); // ok key 
    	if(get_headset_status() & SEC_HEADSET_4_POLE_DEVICE)
