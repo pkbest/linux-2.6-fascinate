@@ -13,9 +13,6 @@ fi
 
 if [ ! -d fascinate_initramfs ]; then
 	git clone git://github.com/jt1134/fascinate_initramfs.git
-	cd fascinate_initramfs
-	git checkout --track -b TW origin/TW
-	cd ..
 fi
 
 rm -rf fascinate_voodoo5
