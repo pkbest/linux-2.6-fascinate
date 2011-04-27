@@ -1850,13 +1850,13 @@ static ssize_t print_switch_state(struct switch_dev *sdev, char *buf)
 #elif 1 //P1
     if(usbstatus){
         if((currentusbstatus== USBSTATUS_UMS) || (currentusbstatus== USBSTATUS_ADB))
-            return sprintf(buf, "%s\n", "ums online");
+            return sprintf(buf, "%s\n", "online");
         else
             return sprintf(buf, "%s\n", "InsertOffline");
     }
     else{
         if((currentusbstatus== USBSTATUS_UMS) || (currentusbstatus== USBSTATUS_ADB))
-            return sprintf(buf, "%s\n", "ums offline");
+            return sprintf(buf, "%s\n", "offline");
         else
             return sprintf(buf, "%s\n", "RemoveOffline");
     }
