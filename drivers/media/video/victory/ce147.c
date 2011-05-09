@@ -3853,8 +3853,11 @@ static int ce147_set_metering(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 		break;
 
 		default:
-			dev_err(&client->dev, "%s: failed: to set_photometry, enum: %d\n", __func__, ctrl->value);
-			return -EINVAL;
+//			dev_err(&client->dev, "%s: failed: to set_photometry, enum: %d\n", __func__, ctrl->value);
+//			return -EINVAL;
+			                        ce147_buf_set_metering[1] = CAMERA_METERING_DEFAULT;
+                        pr_warn("%s: metering mode %d not defined assuming default metering", __func__, ctrl->value);
+
 		break;
 	}
 

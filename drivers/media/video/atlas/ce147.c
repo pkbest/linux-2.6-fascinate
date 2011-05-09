@@ -3683,8 +3683,9 @@ static int ce147_set_white_balance(struct v4l2_subdev *sd, struct v4l2_control *
 		break;
 
 		default:
-			dev_err(&client->dev, "%s: failed: to set_white_balance, enum: %d\n", __func__, ctrl->value);
-			return -EINVAL;
+			ce147_buf_set_wb_auto[0] = 0x00;
+			dev_err(&client->dev, "%s: setting default white balance: %d\n", __func__, ctrl->value);
+		//	return -EINVAL;
 		break;
 	}
 
@@ -3814,8 +3815,10 @@ static int ce147_set_metering(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 		break;
 
 		default:
-			dev_err(&client->dev, "%s: failed: to set_photometry, enum: %d\n", __func__, ctrl->value);
-			return -EINVAL;
+//			dev_err(&client->dev, "%s: failed: to set_photometry, enum: %d\n", __func__, ctrl->value);
+//			return -EINVAL;
+			ce147_buf_set_metering[1] = 0x01;
+			dev_err(&client->dev, "%s: metering mode %d not defined assuming default metering", __func__, ctrl->value);
 		break;
 	}
 
