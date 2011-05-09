@@ -1,5 +1,8 @@
 /*
- * Driver for CE147 (5MP Camera) from NEC
+ *  Driver for CE147 (5MP Camera) from NEC
+ *
+ * Copyright © 2010 Samsung Electronics
+ * Copyright 2010 Kolja Dummann <k.dummann@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,13 +28,12 @@
 #include <plat/gpio-cfg.h>
 #include <mach/regs-gpio.h>
 #include <mach/regs-clock.h>
-#include <mach/atlas/max8998_function.h>
 
 //#define MDNIE_TUNING
 
 #define CE147_DRIVER_NAME	"CE147"
 
-#define FORMAT_FLAGS_COMPRESSED			0x3
+#define FORMAT_FLAGS_COMPRESSED		0x3
 #define SENSOR_JPEG_SNAPSHOT_MEMSIZE	0x360000
 
 //#define CE147_DEBUG
@@ -56,74 +58,72 @@
 #define POLL_TIME_MS		10
 
 /* Camera ISP command */
-#define CMD_VERSION						0x00
-#define DATA_VERSION_FW					0x00
-#define DATA_VERSION_DATE				0x01
+#define CMD_VERSION			0x00
+#define DATA_VERSION_FW		0x00
+#define DATA_VERSION_DATE	0x01
 #define CMD_GET_BATCH_REFLECTION_STATUS	0x02
-#define DATA_VERSION_SENSOR				0x03
-#define CMD_HD_PREVIEW					0x03
-#define CMD_SET_WB						0x04
-#define DATA_VERSION_AF					0x05
-#define CMD_SET_FLASH_MANUAL			0x06
+#define DATA_VERSION_SENSOR	0x03
+#define CMD_HD_PREVIEW		0x03
+#define CMD_SET_WB			0x04
+#define DATA_VERSION_AF		0x05
+#define CMD_SET_FLASH_MANUAL	0x06
 #define CMD_SET_EXIF_CTRL    	0x07//ykh
-#define CMD_AE_WB_LOCK					0x11
-#define CMD_SET_ANTI_BANDING			0x14
-#define CMD_SET_WB_AUTO					0x1A
-#define CMD_SET_AUTO_FOCUS_MODE			0x20
-#define CMD_START_AUTO_FOCUS_SEARCH		0x23
-#define CMD_CHECK_AUTO_FOCUS_SEARCH		0x24
-#define CMD_STOP_LENS_MOVEMENT			0x35
-#define CMD_SET_EFFECT					0x3D
-#define CMD_SET_TOUCH_AUTO_FOCUS		0x4D
-#define CMD_START_OT					0x50
-#define CMD_CHECK_OT					0x51
-#define CMD_PREVIEW_SIZE				0x54
-#define CMD_FPS							0x5A
-#define CMD_SET_ANTI_SHAKE				0x5B
-#define CMD_SET_DATA					0x65
-#define CMD_DATA_OUT_REQ				0x66
-#define CMD_PREVIEW						0x6B
-#define	CMD_PREVIEW_STATUS				0x6C
-#define CMD_CAPTURE_SIZE				0x73
-#define CMD_BUFFERING_CAPTURE			0x74
-#define CMD_SET_SMART_AUTO  			0x82
-#define CMD_GET_SMART_AUTO_STATUS		0x83
-#define CMD_SET_WDR						0x88
-#define CMD_JPEG_SIZE					0x8E
-#define CMD_JPEG_BUFFERING				0x8F
-#define CMD_JPEG_CONFIG					0x90
+#define CMD_AE_WB_LOCK		0x11
+#define CMD_SET_ANTI_BANDING	0x14
+#define CMD_SET_WB_AUTO		0x1A
+#define CMD_SET_AUTO_FOCUS_MODE 0x20
+#define CMD_START_AUTO_FOCUS_SEARCH 0x23
+#define CMD_CHECK_AUTO_FOCUS_SEARCH 0x24
+#define CMD_STOP_LENS_MOVEMENT 0x35
+#define CMD_SET_EFFECT		0x3D
+#define CMD_SET_TOUCH_AUTO_FOCUS 0x4D
+#define CMD_START_OT		0x50
+#define CMD_CHECK_OT		0x51
+#define CMD_PREVIEW_SIZE	0x54
+#define CMD_FPS				0x5A
+#define CMD_SET_ANTI_SHAKE	0x5B
+#define CMD_SET_DATA		0x65
+#define CMD_DATA_OUT_REQ	0x66
+#define CMD_PREVIEW			0x6B
+#define	CMD_PREVIEW_STATUS	0x6C
+#define CMD_CAPTURE_SIZE	0x73
+#define CMD_BUFFERING_CAPTURE	0x74
+#define CMD_SET_SMART_AUTO  0x82
+#define CMD_GET_SMART_AUTO_STATUS 0x83
+#define CMD_SET_WDR			0x88
+#define CMD_JPEG_SIZE		0x8E
+#define CMD_JPEG_BUFFERING	0x8F
+#define CMD_JPEG_CONFIG		0x90
 #define CMD_JPEG_BUFFERING2		0x92//ykh
-#define CMD_SET_FACE_DETECTION 			0x9A
-#define CMD_SET_FACE_LOCK 				0x9C
-#define CMD_INFO_EXIF					0xA0
-#define CMD_INFO_MODEL					0xA1
-#define CMD_INFO_ROT					0xA2
+#define CMD_SET_FACE_DETECTION 0x9A
+#define CMD_SET_FACE_LOCK 	0x9C
+#define CMD_INFO_EXIF		0xA0
+#define CMD_INFO_MODEL		0xA1
+#define CMD_INFO_ROT		0xA2
 #define CMD_INFO_LONGITUDE_LATITUDE		0xA3
-#define CMD_INFO_ALTITUDE				0xA4
-#define CMD_SET_FLASH					0xB2
-#define CMD_SET_FLASH_POWER             0xB3        // sunggeun DG12 ATLAS
-#define CMD_SET_DZOOM					0xB9
-#define CMD_GET_DZOOM_LEVEL				0xBA
-#define CMD_SET_EFFECT_SHOT				0xC0
-#define DATA_VERSION_GAMMA				0x0E0
-#define DATA_VERSION_SENSOR_MAKER		0xE0
-#define CMD_CHECK_DATALINE				0xEC
-#define CMD_INIT						0xF0
-#define CMD_FW_INFO						0xF2
-#define CMD_FWU_UPDATE					0xF3
-#define CMD_FW_UPDATE					0xF4
-#define CMD_FW_STATUS					0xF5
-#define CMD_FW_DUMP						0xFB
+#define CMD_INFO_ALTITUDE		0xA4
+#define CMD_SET_FLASH		0xB2
+#define CMD_SET_DZOOM		0xB9
+#define CMD_GET_DZOOM_LEVEL 0xBA
+#define CMD_SET_EFFECT_SHOT 0xC0
+#define DATA_VERSION_GAMMA	0x0E0
+#define DATA_VERSION_SENSOR_MAKER 0xE0
+#define CMD_CHECK_DATALINE	0xEC
+#define CMD_INIT			0xF0
+#define CMD_FW_INFO			0xF2
+#define CMD_FWU_UPDATE		0xF3
+#define CMD_FW_UPDATE		0xF4
+#define CMD_FW_STATUS		0xF5
+#define CMD_FW_DUMP			0xFB
 #define CMD_GPS_TIMESTAMP		0xA7
 
-#define CE147_FW_F2_PATH	"/system/firmware/CE147F02.bin"
+#define CE147_FW_F2_PATH	"/system/vendor/firmware/CE147F02.bin"
 
 static unsigned char	MAIN_SW_FW[4]			= {0x0, 0x0, 0x0, 0x0};	/* {FW Maj, FW Min, PRM Maj, PRM Min} */
 static int				MAIN_SW_DATE_INFO[3]	= {0x0, 0x0, 0x0};		/* {Year, Month, Date} */
 
 static unsigned char ce147_buf_set_dzoom[31] = {0xff,0xe7,0xd3,0xc2,0xb4,0xa7,0x9c,0x93,0x8b,0x83,0x7c,0x76,0x71,0x6c,0x67,0x63,0x5f,0x5b,0x58,0x55,0x52,0x4f,0x4d,0x4a,0x48,0x46,0x44,0x42,0x41,0x40,0x3f};
 static int DZoom_State = 0;
-static int Flash_Mode = 0; //SecFeature.Camera aswoogi
 
 enum ce147_oprmode {
 	CE147_OPRMODE_VIDEO = 0,
@@ -140,7 +140,6 @@ static int ce147_set_gamma(struct v4l2_subdev * sd, struct v4l2_control * ctrl);
 static int ce147_set_effect(struct v4l2_subdev * sd, struct v4l2_control * ctrl);
 static int ce147_set_white_balance(struct v4l2_subdev * sd, struct v4l2_control * ctrl);
 static int ce147_s_ext_ctrl(struct v4l2_subdev *sd, struct v4l2_ext_control *ctrl);
-static int ce147_set_preflash(struct v4l2_subdev *sd, int flash_mode); //SecFeature.Camera aswoogi
 
 enum ce147_frame_size {
 	CE147_PREVIEW_QCIF = 0,
@@ -151,14 +150,14 @@ enum ce147_frame_size {
 	CE147_PREVIEW_WVGA,
 	CE147_PREVIEW_720P,
 	CE147_PREVIEW_VERTICAL_QCIF,
-	CE147_CAPTURE_VGA,	/* 640 x 480 */
-	CE147_CAPTURE_WVGA,	/* 800 x 480 */
-	CE147_CAPTURE_W1MP,	/* 1600 x 960 */
-	CE147_CAPTURE_2MP,	/* UXGA  - 1600 x 1200 */
-	CE147_CAPTURE_W2MP,	/* 35mm Academy Offset Standard 1.66  - 2048 x 1232, 2.4MP */
-	CE147_CAPTURE_3MP,	/* QXGA  - 2048 x 1536 */
-	CE147_CAPTURE_W4MP,	/* WQXGA - 2560 x 1536 */
-	CE147_CAPTURE_5MP,	/* 2560 x 1920 */
+	CE147_CAPTURE_VGA, /* 640 x 480 */	
+	CE147_CAPTURE_WVGA, /* 800 x 480 */
+	CE147_CAPTURE_W1MP, /* 1600 x 960 */
+	CE147_CAPTURE_2MP, /* UXGA  - 1600 x 1200 */
+	CE147_CAPTURE_W2MP, /* 35mm Academy Offset Standard 1.66  - 2048 x 1232, 2.4MP */	
+	CE147_CAPTURE_3MP, /* QXGA  - 2048 x 1536 */
+	CE147_CAPTURE_W4MP, /* WQXGA - 2560 x 1536 */
+	CE147_CAPTURE_5MP, /* 2560 x 1920 */
 };
 
 struct ce147_enum_framesize {
@@ -166,7 +165,7 @@ struct ce147_enum_framesize {
 	enum ce147_oprmode mode;
 	unsigned int index;
 	unsigned int width;
-	unsigned int height;
+	unsigned int height;	
 };
 
 static struct ce147_enum_framesize ce147_framesize_list[] = {
@@ -201,9 +200,9 @@ struct ce147_date_info {
 
 enum ce147_runmode {
 	CE147_RUNMODE_NOTREADY,
-	CE147_RUNMODE_IDLE,
+	CE147_RUNMODE_IDLE, 
 	CE147_RUNMODE_READY,
-	CE147_RUNMODE_RUNNING,
+	CE147_RUNMODE_RUNNING, 
 };
 
 struct ce147_firmware {
@@ -234,12 +233,12 @@ struct ce147_jpeg_param {
 	unsigned int main_offset;
 	unsigned int thumb_offset;
 	unsigned int postview_offset;
-} ;
+} ; 
 
 struct ce147_position {
 	int x;
 	int y;
-} ;
+} ; 
 
 struct ce147_gps_info{
 	unsigned char ce147_gps_buf[8];
@@ -262,7 +261,7 @@ struct ce147_gamma{
 	unsigned int rg_low;
 	unsigned int rg_high;
 	unsigned int bg_low;
-	unsigned int bg_high;
+	unsigned int bg_high;	
 };
 
 #if 0
@@ -301,7 +300,7 @@ struct ce147_state {
 	struct ce147_date_info dateinfo;
 	struct ce147_firmware fw_info;
 	struct ce147_position position;
-	struct ce147_sensor_maker sensor_info;
+	struct ce147_sensor_maker sensor_info;	
 	struct ce147_version_af af_info;
 	struct ce147_gamma gamma;
 	struct v4l2_streamparm strm;
@@ -314,7 +313,7 @@ struct ce147_state {
 	int fps;
 	int ot_status;
 	int sa_status;
-	int anti_banding;
+	int anti_banding;	
 	int preview_size;
 	unsigned int fw_dump_size;
 	int hd_preview_on;
@@ -357,8 +356,8 @@ static inline struct ce147_state *to_state(struct v4l2_subdev *sd)
 	return container_of(sd, struct ce147_state, sd);
 }
 
-/**
- * ce147_i2c_write_multi: Write (I2C) multiple bytes to the camera sensor
+/** 
+ * ce147_i2c_write_multi: Write (I2C) multiple bytes to the camera sensor 
  * @client: pointer to i2c_client
  * @cmd: command register
  * @w_data: data to be written
@@ -366,7 +365,7 @@ static inline struct ce147_state *to_state(struct v4l2_subdev *sd)
  *
  * Returns 0 on success, <0 on error
  */
-static int ce147_i2c_write_multi(struct i2c_client *client, unsigned char cmd,
+static int ce147_i2c_write_multi(struct i2c_client *client, unsigned char cmd, 
 		unsigned char *w_data, unsigned int w_len)
 {
 	int retry_count = 1;
@@ -379,28 +378,29 @@ static int ce147_i2c_write_multi(struct i2c_client *client, unsigned char cmd,
 	memcpy(buf+1, w_data, w_len);
 
 #ifdef CE147_DEBUG
-	{
-		int j;
-		printk("W: ");
-		for (j = 0; j <= w_len; j++){
-			printk("0x%02x ", buf[j]);
-		}
-		printk("\n");
+        int j;
+	pr_err("W: ");
+	for(j = 0; j <= w_len; j++){
+		pr_err("0x%02x ", buf[j]);
 	}
 #endif
 
-	while (retry_count--){
+	while(retry_count--){
 		ret  = i2c_transfer(client->adapter, &msg, 1);
-		if (ret == 1)
+		if(ret == 1)
 			break;
+		pr_err("%s: comfail0r retry\n", __func__);
 		msleep(POLL_TIME_MS);
 	}
+	
+	if(ret != 1)
+	        pr_err("%s: i2c tranfer failed\n", __func__);
 
 	return (ret == 1) ? 0 : -EIO;
 }
 
-/**
- * ce147_i2c_read_multi: Read (I2C) multiple bytes to the camera sensor
+/** 
+ * ce147_i2c_read_multi: Read (I2C) multiple bytes to the camera sensor 
  * @client: pointer to i2c_client
  * @cmd: command register
  * @w_data: data to be written
@@ -410,8 +410,8 @@ static int ce147_i2c_write_multi(struct i2c_client *client, unsigned char cmd,
  *
  * Returns 0 on success, <0 on error
  */
-static int ce147_i2c_read_multi(struct i2c_client *client, unsigned char cmd,
-		unsigned char *w_data, unsigned int w_len,
+static int ce147_i2c_read_multi(struct i2c_client *client, unsigned char cmd, 
+		unsigned char *w_data, unsigned int w_len, 
 		unsigned char *r_data, unsigned int r_len)
 {
 	unsigned char buf[w_len+1];
@@ -460,175 +460,24 @@ static int ce147_i2c_read_multi(struct i2c_client *client, unsigned char cmd,
 
 #ifdef CE147_CAM_POWER
 
-/**
- * ce147_power_on: Power on the camera sensor
- * Use only for updating camera firmware
- * Returns 0 forever
- */
-static int ce147_power_on(void)
-{
-	printk(KERN_DEBUG "ce147_power_on for updating camera firmware\n");
-
-	/* CAM_MEGA_EN - GPJ0(6) */
-	gpio_request(GPIO_CAM_MEGA_EN, "GPJ0");
-
-	/* CAM_MEGA_nRST - GPJ1(5) */
-	gpio_request(GPIO_CAM_MEGA_nRST, "GPJ1");
-
-	//For Emul Rev0.1
-	// Because B4, B5 do not use this GPIO, this GPIO is enabled in all HW version
-	/* CAM_IO_EN - GPB(7) */
-	gpio_request(GPIO_GPB7, "GPB");
-
-	// Turn CAM_ISP_1.2V on
-	Set_MAX8998_PM_OUTPUT_Voltage(BUCK4, VCC_1p200);
-	Set_MAX8998_PM_REG(EN4, 1);
-
-	mdelay(1);
-
-	// Turn CAM_AF_2.8V on
-	Set_MAX8998_PM_OUTPUT_Voltage(LDO11, VCC_2p800);
-	Set_MAX8998_PM_REG(ELDO11, 1);
-
-	// Turn CAM_SENSOR_1.2V on
-	Set_MAX8998_PM_OUTPUT_Voltage(LDO12, VCC_1p200);
-	Set_MAX8998_PM_REG(ELDO12, 1);
-
-	// Turn CAM_SENSOR_A2.8V on
-	Set_MAX8998_PM_OUTPUT_Voltage(LDO13, VCC_2p800);
-	Set_MAX8998_PM_REG(ELDO13, 1);
-
-	// Turn CAM_ISP_1.8V on
-	Set_MAX8998_PM_OUTPUT_Voltage(LDO14, VCC_1p800);
-	Set_MAX8998_PM_REG(ELDO14, 1);
-
-	// Turn CAM_ISP_2.8V on
-	Set_MAX8998_PM_OUTPUT_Voltage(LDO15, VCC_2p800);
-	Set_MAX8998_PM_REG(ELDO15, 1);
-
-	// Turn CAM_SENSOR_1.8V on
-	Set_MAX8998_PM_OUTPUT_Voltage(LDO16, VCC_1p800);
-	Set_MAX8998_PM_REG(ELDO16, 1);
-
-	// Turn CAM_ISP_SYS_2.8V on
-	gpio_direction_output(GPIO_GPB7, 0);
-	gpio_set_value(GPIO_GPB7, 1);
-
-	mdelay(1);
-
-	// Mclk enable
-	s3c_gpio_cfgpin(GPIO_CAM_MCLK, S5PV210_GPE1_3_CAM_A_CLKOUT);
-
-	mdelay(1);
-
-	// CAM_MEGA_EN HIGH
-	gpio_direction_output(GPIO_CAM_MEGA_EN, 0);
-	gpio_set_value(GPIO_CAM_MEGA_EN, 1);
-
-	mdelay(1);
-
-	// CAM_MEGA_nRST HIGH
-	gpio_direction_output(GPIO_CAM_MEGA_nRST, 0);
-	gpio_set_value(GPIO_CAM_MEGA_nRST, 1);
-
-	gpio_free(GPIO_CAM_MEGA_EN);
-	gpio_free(GPIO_CAM_MEGA_nRST);
-	gpio_free(GPIO_GPB7);
-
-	mdelay(5);
-
-	return 0;
-}
-
-/**
- * ce147_power_off: Power off the camera sensor
- * Use only for updating camera firmware
- * Returns 0 forever
- */
-static int ce147_power_off(void)
-{
-	printk(KERN_DEBUG "ce147_power_off for updating camera firmware\n");
-
-	/* CAM_MEGA_EN - GPJ0(6) */
-	gpio_request(GPIO_CAM_MEGA_EN, "GPJ0");
-
-	/* CAM_MEGA_nRST - GPJ1(5) */
-	gpio_request(GPIO_CAM_MEGA_nRST, "GPJ1");
-
-	//For Emul Rev0.1
-	// Because B4, B5 do not use this GPIO, this GPIO is enabled in all HW version
-	/* CAM_IO_EN - GPB(7) */
-	gpio_request(GPIO_GPB7, "GPB");
-
-	// CAM_MEGA_nRST - GPJ1(5) LOW
-	gpio_direction_output(GPIO_CAM_MEGA_nRST, 1);
-	gpio_set_value(GPIO_CAM_MEGA_nRST, 0);
-
-	mdelay(1);
-
-	// Mclk disable
-	s3c_gpio_cfgpin(GPIO_CAM_MCLK, 0);
-
-	mdelay(1);
-
-	// CAM_MEGA_EN - GPJ0(6) LOW
-	gpio_direction_output(GPIO_CAM_MEGA_EN, 1);
-	gpio_set_value(GPIO_CAM_MEGA_EN, 0);
-
-	mdelay(1);
-
-	// Turn CAM_ISP_SYS_2.8V off
-	gpio_direction_output(GPIO_GPB7, 1);
-	gpio_set_value(GPIO_GPB7, 0);
-
-	// Turn CAM_AF_2.8V off
-	Set_MAX8998_PM_REG(ELDO11, 0);
-
-	// Turn CAM_SENSOR_1.2V off
-	Set_MAX8998_PM_REG(ELDO12, 0);
-
-	// Turn CAM_SENSOR_A2.8V off
-	Set_MAX8998_PM_REG(ELDO13, 0);
-
-	// Turn CAM_ISP_1.8V off
-	Set_MAX8998_PM_REG(ELDO14, 0);
-
-	// Turn CAM_ISP_2.8V off
-	Set_MAX8998_PM_REG(ELDO15, 0);
-
-	// Turn CAM_SENSOR_1.8V off
-	Set_MAX8998_PM_REG(ELDO16, 0);
-
-	mdelay(1);
-
-	// Turn CAM_ISP_1.2V off
-	Set_MAX8998_PM_REG(EN4, 0);
-
-	mdelay(1);
-
-	gpio_free(GPIO_CAM_MEGA_EN);
-	gpio_free(GPIO_CAM_MEGA_nRST);
-	gpio_free(GPIO_GPB7);
-
-	return 0;
-}
 
 /**
  * ce147_power_en: Enable or disable the camera sensor power
  * Use only for updating camera firmware
  * Returns 0 forever
  */
-static int ce147_power_en(int onoff)
+static int ce147_power_en(int onoff, struct v4l2_subdev *sd)
 {
-	if(onoff == 1)
-	{
-		ce147_power_on();
+	struct i2c_client *client = v4l2_get_subdevdata(sd);
+	struct ce147_platform_data *pdata;
+
+	pdata = client->dev.platform_data;
+
+	if (pdata->cam_power) {
+	        pdata->cam_power(onoff);
+	        msleep(5);
 	}
 
-	else
-	{
-		ce147_power_off();
-	}
 	return 0;
 }
 
@@ -636,7 +485,7 @@ static int ce147_power_en(int onoff)
 
 /**
  *  This function checks the status of the camera sensor by polling
- *  through the 'cmd' command register.
+ *  through the 'cmd' command register. 
  *
  *  'polling_interval' is the delay between successive polling events
  *
@@ -648,7 +497,7 @@ static int ce147_power_en(int onoff)
  *  On failure, it returns -EBUSY.
  *  On I2C related failure, it returns -EIO.
  */
-static int ce147_waitfordone_timeout(struct i2c_client *client, unsigned char cmd, unsigned char value,
+static int ce147_waitfordone_timeout(struct i2c_client *client, unsigned char cmd, unsigned char value, 
 					int timeout, int polling_interval)
 {
 	int err;
@@ -667,7 +516,7 @@ static int ce147_waitfordone_timeout(struct i2c_client *client, unsigned char cm
 
 		ce147_msg(&client->dev, "Status check returns %02x\n", cam_status);
 
-		if(cam_status == value)
+		if(cam_status == value) 
 			break;
 
 		msleep(polling_interval);
@@ -681,7 +530,7 @@ static int ce147_waitfordone_timeout(struct i2c_client *client, unsigned char cm
 
 static int ce147_get_batch_reflection_status(struct v4l2_subdev *sd)
 {
-	int err;
+	int err;		
 	int end_cnt = 0;
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 
@@ -697,7 +546,7 @@ static int ce147_get_batch_reflection_status(struct v4l2_subdev *sd)
 	//To Do: This code needs timeout API for do-while
 	do
 	{
-		msleep(10);
+		msleep(10); 
         err = ce147_i2c_read_multi(client, CMD_GET_BATCH_REFLECTION_STATUS, NULL, 0, &ce147_batch_ref_status, 1);
 		if(err < 0){
 			dev_err(&client->dev, "%s: failed: i2c_read for get_batch_reflection_status\n", __func__);
@@ -706,11 +555,11 @@ static int ce147_get_batch_reflection_status(struct v4l2_subdev *sd)
 		end_cnt++;
 	} while(ce147_batch_ref_status && end_cnt < 200);
 
-	if(end_cnt > 5)
+	if(end_cnt > 5) 
 	{
 		ce147_msg(&client->dev, "%s: count(%d) status(%02x) \n", __func__, end_cnt, ce147_batch_ref_status);
 	}
-
+		
 	if (ce147_batch_ref_status != 0x00)
 	{
 		dev_err(&client->dev, "%s: failed: to get_batch_reflection_status\n", __func__);
@@ -738,15 +587,15 @@ static int ce147_read_fw_bin(const char *path, char *fwBin, int *fwSize)
 	{
 		old_fs = get_fs();
 		set_fs(KERNEL_DS);
-
+		
 		file_size = filep->f_op->llseek(filep, 0, SEEK_END);
 		filep->f_op->llseek(filep, 0, SEEK_SET);
-
+		
 		buffer = (char*)kmalloc(file_size+1, GFP_KERNEL);
-
+		
 		filep->f_op->read(filep, buffer, file_size, &filep->f_pos);
 		buffer[file_size] = '\0';
-
+		
 		filp_close(filep, current->files);
 
 		set_fs(old_fs);
@@ -782,19 +631,7 @@ static int ce147_get_main_sw_fw_version(struct v4l2_subdev *sd)
 
 	if((MAIN_SW_DATE_INFO[0] == 0x00) && (MAIN_SW_DATE_INFO[1] == 0x00) && (MAIN_SW_DATE_INFO[2] == 0x00))
 	{
-//kavitha modified +
-		if(state->fw.major==0x31)   //For SEH version
-		{
-			err = ce147_read_fw_bin("/system/seh/CE147F02.bin", fw_data, &fw_size);
-			printk("Inside ce147_get_main_sw_fw_version :  seh bin folder!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-		}
-		else //Default SEM if(state->fw.major==0x05)                      //For SEM version
-		{
-			err = ce147_read_fw_bin("/system/sem/CE147F02.bin", fw_data, &fw_size);
-			printk("Inside ce147_get_main_sw_fw_version :  sem bin folder!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-		}
-		//err = ce147_read_fw_bin(CE147_FW_F2_PATH, fw_data, &fw_size);
-//kavitha modified -
+		err = ce147_read_fw_bin(CE147_FW_F2_PATH, fw_data, &fw_size);
 		if(err < 0)
 		{
 			printk("fail : read main_sw_version \n");
@@ -846,7 +683,7 @@ static int ce147_load_fw(struct v4l2_subdev *sd)
 	int ce147_reglen_init = 1;
 	unsigned char ce147_regbuf_init[1] = { 0x00 };
 	int err;
-
+	
         /** Just before this function call, we enable the power and clock. Hence
 	 *  we need to wait for some time before we can start communicating with the sensor.
 	 */
@@ -872,14 +709,14 @@ static int ce147_get_version(struct v4l2_subdev *sd, int object_id, unsigned cha
 	unsigned int cmd_len = 1;
 	unsigned int info_len = 4;
 	int err;
-
+	
 	switch(object_id)
 	{
 	case DATA_VERSION_FW:
 	case DATA_VERSION_DATE:
 	case DATA_VERSION_SENSOR:
 	case DATA_VERSION_SENSOR_MAKER:
-	case DATA_VERSION_AF:
+	case DATA_VERSION_AF:			
 		cmd_buf[0] = object_id;
 		break;
 	default:
@@ -901,7 +738,7 @@ static int ce147_get_fw_version(struct v4l2_subdev *sd)
 
 	err = ce147_get_version(sd, DATA_VERSION_FW, version_info);
 
-	if(err < 0)
+	if(err < 0) 
 		return  err;
 
 	state->fw.minor = version_info[0];
@@ -921,7 +758,7 @@ static int ce147_get_dateinfo(struct v4l2_subdev *sd)
 
 	err = ce147_get_version(sd, DATA_VERSION_DATE, version_info);
 
-	if(err < 0)
+	if(err < 0) 
 		return  err;
 
 	state->dateinfo.year  = version_info[0] - 'A' + 2007;
@@ -939,7 +776,7 @@ static int ce147_get_sensor_version(struct v4l2_subdev *sd)
 
 	err = ce147_get_version(sd, DATA_VERSION_SENSOR, version_info);
 
-	if(err < 0)
+	if(err < 0) 
 		return  err;
 
 	state->sensor_version = version_info[0];
@@ -955,7 +792,7 @@ static int ce147_get_sensor_maker_version(struct v4l2_subdev *sd)
 
 	err = ce147_get_version(sd, DATA_VERSION_SENSOR_MAKER, version_info);
 
-	if(err < 0)
+	if(err < 0) 
 		return  err;
 
 	state->sensor_info.maker = version_info[0];
@@ -972,10 +809,10 @@ static int ce147_get_af_version(struct v4l2_subdev *sd)
 
 	err = ce147_get_version(sd, DATA_VERSION_AF, version_info);
 
-	if(err < 0)
+	if(err < 0) 
 		return  err;
 
-	//printk("ce147_get_af_version: data0: 0x%02x, data1: 0x%02x\n", version_info[0], version_info[1]);
+	//printk("ce147_get_af_version: data0: 0x%02x, data1: 0x%02x\n", version_info[0], version_info[1]);	
 
 	state->af_info.low = version_info[1];
 	state->af_info.high = version_info[0];
@@ -988,43 +825,43 @@ static int ce147_get_gamma_version(struct v4l2_subdev *sd)
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
     struct ce147_state *state = to_state(sd);
 	unsigned char gamma_info[2] = {0x00, 0x00};
-	unsigned int info_len = 2;
+	unsigned int info_len = 2;	
 	int err = -1;
 
 	unsigned char rg_low_buf[2] = {0x0C, 0x00};
 	unsigned char rg_high_buf[2] = {0x0D, 0x00};
 	unsigned char bg_low_buf[2] = {0x0E, 0x00};
-	unsigned char bg_high_buf[2] = {0x0F, 0x00};
+	unsigned char bg_high_buf[2] = {0x0F, 0x00};	
 	unsigned int buf_len = 2;
 
 
     err = ce147_i2c_read_multi(client, DATA_VERSION_GAMMA, rg_low_buf, buf_len, gamma_info, info_len);
     if(err < 0)
-            return -EIO;
+            return -EIO;	
 
 	state->gamma.rg_low = gamma_info[1];
-	//printk("ce147_get_gamma_version1: data1: 0x%02x, data1: 0x%02x\n", gamma_info[0], gamma_info[1]);
+	//printk("ce147_get_gamma_version1: data1: 0x%02x, data1: 0x%02x\n", gamma_info[0], gamma_info[1]);		
 
     err = ce147_i2c_read_multi(client, DATA_VERSION_GAMMA, rg_high_buf, buf_len, gamma_info, info_len);
     if(err < 0)
-            return -EIO;
+            return -EIO;	
 
 	state->gamma.rg_high = gamma_info[1];
-	//printk("ce147_get_gamma_version1: data1: 0x%02x, data1: 0x%02x\n", gamma_info[0], gamma_info[1]);
+	//printk("ce147_get_gamma_version1: data1: 0x%02x, data1: 0x%02x\n", gamma_info[0], gamma_info[1]);	
 
     err = ce147_i2c_read_multi(client, DATA_VERSION_GAMMA, bg_low_buf, buf_len, gamma_info, info_len);
     if(err < 0)
-            return -EIO;
-
+            return -EIO;	
+	
 	state->gamma.bg_low = gamma_info[1];
-	//printk("ce147_get_gamma_version1: data1: 0x%02x, data1: 0x%02x\n", gamma_info[0], gamma_info[1]);
+	//printk("ce147_get_gamma_version1: data1: 0x%02x, data1: 0x%02x\n", gamma_info[0], gamma_info[1]);	
 
     err = ce147_i2c_read_multi(client, DATA_VERSION_GAMMA, bg_high_buf, buf_len, gamma_info, info_len);
     if(err < 0)
-            return -EIO;
+            return -EIO;		
 
 	state->gamma.bg_high= gamma_info[1];
-	//printk("ce147_get_gamma_version1: data1: 0x%02x, data1: 0x%02x\n", gamma_info[0], gamma_info[1]);
+	//printk("ce147_get_gamma_version1: data1: 0x%02x, data1: 0x%02x\n", gamma_info[0], gamma_info[1]);	
 
 	return 0;
 }
@@ -1033,7 +870,7 @@ static int ce147_get_gamma_version(struct v4l2_subdev *sd)
 static int ce147_update_fw(struct v4l2_subdev *sd)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
-	struct ce147_state *state = to_state(sd);
+    struct ce147_state *state = to_state(sd);
 	unsigned char *mbuf = NULL;
 	unsigned char *fw_buf[4];
 	int fw_size[4];
@@ -1051,19 +888,19 @@ static int ce147_update_fw(struct v4l2_subdev *sd)
 
 	mbuf = vmalloc(state->fw_info.size);
 
-	if (NULL == mbuf){
+	if(NULL == mbuf){
 		return -ENOMEM;
 	}
 
-	if (copy_from_user(mbuf, (void *)state->fw_info.addr, state->fw_info.size)){
+	if (copy_from_user(mbuf, (void*)state->fw_info.addr, state->fw_info.size)){
 		err = -EFAULT;
 		goto out;
 	}
 
 	/** The firmware buffer is now copied to mbuf, so the firmware code is now in mbuf.
-	 *  We can use mbuf with i2c_tranfer call  */
-	for (i = 0; i < 4; i++){
-		if (index > state->fw_info.size - 4){
+ 	 *  We can use mbuf with i2c_tranfer call  */
+	for(i = 0; i < 4; i++){
+		if(index > state->fw_info.size - 4){
 			dev_err(&client->dev, "%s:Error size parameter\n", __func__);
 			break;
 		}
@@ -1074,58 +911,58 @@ static int ce147_update_fw(struct v4l2_subdev *sd)
 		dev_err(&client->dev, "%s: [%d] fw_size = %d, fw_buf = 0x%p\n", __func__, i, fw_size[i], fw_buf[i]);
 	}
 
-	err = ce147_power_en(1);
-	if (err < 0){
-		dev_err(&client->dev, "%s: failed: ce147_power_en(on)\n", __func__);
+	err = ce147_power_en(1,sd);
+    if(err < 0){	
+			dev_err(&client->dev, "%s: failed: ce147_power_en(on)\n", __func__);
 		err = -EIO;
 		goto out;
-	}
+    }
 
 	msleep(100);
 
 	// [1] set fw updater info
-	err = ce147_i2c_write_multi(client, CMD_FW_INFO, fw_buf[0], 4);
-	if (err < 0){
+    err = ce147_i2c_write_multi(client, CMD_FW_INFO, fw_buf[0], 4);
+    if(err < 0){	
 		dev_err(&client->dev, "%s: failed: i2c_write for 0xf2, fw_size[0]: %d, fw_buf[0]: 0x%02x\n", __func__, fw_size[0], (unsigned int)(fw_buf[0]));
 		err = -EIO;
 		goto out;
-	}
-	msleep(100);
+    }
+    msleep(100);
 
 	//printk("ce147_update_fw: i2c_write for 0xf2, fw_size[0]: %d, fw_buf[0]: 0x%02x\n", fw_size[0], fw_buf[0]);
 
 	packet_num = *(fw_buf[0]) + (*(fw_buf[0]+1)<<8);
 
 	// [2] update firmware
-	for (k = 0; k < packet_num; k++){
+	for (k = 0; k < packet_num; k++){	
 		memcpy(&data[0], fw_buf[1]+j, packet_size);
-		err = ce147_i2c_read_multi(client, CMD_FWU_UPDATE, data, packet_size, &res, 1);
-		if (err < 0){
-			dev_err(&client->dev, "%s: fail: i2c_read for 0xf3, data: 0x%02x\n", __func__, data[0]);
+        err = ce147_i2c_read_multi(client, CMD_FWU_UPDATE, data, packet_size, &res, 1);
+        if(err < 0){
+				dev_err(&client->dev, "%s: fail: i2c_read for 0xf3, data: 0x%02x\n", __func__, data[0]);
 			err = -EIO;
 			goto out;
-		}
+        }
 		msleep(10);
 		j = j + 129;
-		//printk("ce147_update_fw: i2c_read for 0xf3, data: 0x%02x, count: %d\n", data[0], k);
+		//printk("ce147_update_fw: i2c_read for 0xf3, data: 0x%02x, count: %d\n", data[0], k);		
 	}
 
 	k = 0;
 	// [3] get fw status
 	do {
 		msleep(100);
-
+					
 		err = ce147_i2c_read_multi(client, CMD_FW_STATUS, NULL, 0, &res, 1);
-		if (err < 0){
-			dev_err(&client->dev, "%s: fail: i2c_read for 0xf5", __func__);
+        	if(err < 0){
+					dev_err(&client->dev, "%s: fail: i2c_read for 0xf5", __func__);				
 			err = -EIO;
 			goto out;
-		}
-		//printk("ce147_update_fw: i2c_read for 0xf5, data: 0x%02x\n", res);
+        } 
+		//printk("ce147_update_fw: i2c_read for 0xf5, data: 0x%02x\n", res);	
 
 		k++;
-		if (k == 500) break;
-	} while (res != 0x05);
+		if(k == 500) break;
+	} while(res != 0x05);
 
 	msleep(500);
 
@@ -1140,58 +977,58 @@ static int ce147_update_fw(struct v4l2_subdev *sd)
 	}
 	msleep(100);
 
-	//printk("ce147_update_fw: i2c_write for 0xf2, fw_size[2]: %d, fw_buf[2]: 0x%02x\n", fw_size[2], fw_buf[2]);
+	//printk("ce147_update_fw: i2c_write for 0xf2, fw_size[2]: %d, fw_buf[2]: 0x%02x\n", fw_size[2], fw_buf[2]);	
 
 	packet_num = *(fw_buf[2]) + (*(fw_buf[2]+1)<<8);
 
 	//printk("ce147_update_fw: packet_num: %d\n", packet_num);
 
 	j = 0;
-
+	
 	// [5] update firmware
-	for (l = 0; l < packet_num; l++){
+	for (l = 0; l < packet_num; l++){	
 		memcpy(&data2[0], fw_buf[3]+j, packet_size);
 		err = ce147_i2c_write_multi(client, CMD_FW_UPDATE, data2, packet_size);
-		if (err < 0){
-			dev_err(&client->dev, "%s: fail: i2c_read for 0xf4, data:2 0x%02x\n", __func__, data2[0]);
+		if(err < 0){
+				dev_err(&client->dev, "%s: fail: i2c_read for 0xf4, data:2 0x%02x\n", __func__, data2[0]);	
 			err = -EIO;
 			goto out;
 		}
 
 		//printk("ce147_update_fw: i2c_write for 0xf4, data2: 0x%02x, count: %d\n", data2[0], l);
-
+		
 		msleep(10);
 		j = j + 129;
 	}
-
+	
 	l = 0;
 	// [6] get fw status
 	do {
-
+		
 		msleep(100);
-
+					
 		err = ce147_i2c_read_multi(client, CMD_FW_STATUS, NULL, 0, &res, 1);
-		if (err < 0){
-			dev_err(&client->dev, "%s: fail: i2c_read for 0xf5", __func__);
+			if(err < 0){
+					dev_err(&client->dev, "%s: fail: i2c_read for 0xf5", __func__);			
 			err = -EIO;
 			goto out;
-		}
-		//printk("ce147_update_fw: i2c_read for 0xf5, data: 0x%02x\n", res);
+			}	 
+		//printk("ce147_update_fw: i2c_read for 0xf5, data: 0x%02x\n", res);		
 
-		l++;
-		if (l == 500) break;
-	} while (res != 0x06);
+		l++;	
+		if(l == 500) break;
+	} while(res != 0x06);
 
 	vfree(mbuf);
-
-	err = ce147_power_en(0);
-	if (err < 0){
-		dev_err(&client->dev, "%s: failed: ce147_power_en(off)\n", __func__);
-		return -EIO;
-	}
+	
+	err = ce147_power_en(0,sd);
+    if(err < 0){	
+			dev_err(&client->dev, "%s: failed: ce147_power_en(off)\n", __func__);
+	        return -EIO;
+    }
 
 	dev_err(&client->dev, "%s: ce147_power_en(off)\n", __func__);
-
+	
 	return 0;
 out:
 	vfree(mbuf);
@@ -1248,17 +1085,17 @@ static int ce147_update_fw(struct v4l2_subdev *sd)
 		index += ((fw_size[i]-1) & (~0x3)) + 4;
 		dev_err(&client->dev, "%s: [%d] fw_size = %d, fw_buf = 0x%p\n", __func__, i, fw_size[i], fw_buf[i]);
 	}
-
+	
 	test[0] = fw_buf[0];
-
+	
 	for(j = 0; j < fw_size[0]; j++){
 			printk("ce147_update_fw: , fw_size[0]: %d, test[0]: 0x%x\n", fw_size[0], test[0][j]);
 			test[0][j] = ((test[0][j]&0xff00)>>8)|((test[0][j]&0x00ff)<<8);
-			printk("ce147_update_fw: , test1[0]: 0x%x\n", test[0][j]);
+			printk("ce147_update_fw: , test1[0]: 0x%x\n", test[0][j]);				
 		}
 
 	/*for mdnie tuning*/
-
+	
 	mDNIe_txtbuf_to_parsing();
 	//mDNIe_txtbuf_to_parsing_for_lightsensor();
 	//mDNIe_txtbuf_to_parsing_for_backlight();
@@ -1284,15 +1121,15 @@ static int ce147_dump_fw(struct v4l2_subdev *sd)
 	unsigned char res = 0x00;
 	unsigned char data[129];
 	unsigned char data2[130];
-	unsigned char addr[4] = {0x03, 0x00, 0x00, 0x01};
-	unsigned int addr_len = 4;
-	unsigned char dump[1] = {0x00};
+	unsigned char addr[4] = {0x03, 0x00, 0x00, 0x01};	
+	unsigned int addr_len = 4;	
+	unsigned char dump[1] = {0x00};	
 
 	//dev_err(&client->dev, "%s: ce147_fw: buf = 0x%p, len = %d\n", __func__, (void*)state->fw_info.addr, state->fw_info.size);
 
 	mbuf = vmalloc(state->fw_info.size);
 
-	if (NULL == mbuf){
+	if(NULL == mbuf){
 		return -ENOMEM;
 	}
 
@@ -1303,8 +1140,8 @@ static int ce147_dump_fw(struct v4l2_subdev *sd)
 
 	/** The firmware buffer is now copied to mbuf, so the firmware code is now in mbuf.
  	 *  We can use mbuf with i2c_tranfer call  */
-	for (i = 0; i < 4; i++){
-		if (index > state->fw_info.size - 4){
+	for(i = 0; i < 4; i++){
+		if(index > state->fw_info.size - 4){
 			dev_err(&client->dev, "%s:Error size parameter\n", __func__);
 			break;
 		}
@@ -1315,65 +1152,65 @@ static int ce147_dump_fw(struct v4l2_subdev *sd)
 		dev_err(&client->dev, "%s: [%d] fw_size = %d, fw_buf = 0x%p\n", __func__, i, fw_size[i], fw_buf[i]);
 	}
 
-	err = ce147_power_en(1);
-	if (err < 0){
-		dev_err(&client->dev, "%s: failed: ce147_power_en(on)\n", __func__);
+	err = ce147_power_en(1, sd);
+    if(err < 0){	
+			dev_err(&client->dev, "%s: failed: ce147_power_en(on)\n", __func__);
 		err = -EIO;
 		goto out;
-	}
+    }
 
 	msleep(100);
 
 	// [1] set fw updater info
     err = ce147_i2c_write_multi(client, CMD_FW_INFO, fw_buf[0], 4);
-	if (err < 0){
+    if(err < 0){	
 		dev_err(&client->dev, "%s: failed: i2c_write for 0xf2, fw_size[0]: %d, fw_buf[0]: 0x%02x\n", __func__, fw_size[0], (unsigned int)(fw_buf[0]));
 		err = -EIO;
 		goto out;
-	}
-	msleep(100);
+    }
+    msleep(100);
 
 	//printk("ce147_update_fw: i2c_write for 0xf2, fw_size[0]: %d, fw_buf[0]: 0x%02x\n", fw_size[0], fw_buf[0]);
 
 	packet_num = *(fw_buf[0]) + (*(fw_buf[0]+1)<<8);
 
 	// [2] update firmware
-	for (k = 0; k < packet_num; k++){
+	for (k = 0; k < packet_num; k++){	
 		memcpy(&data[0], fw_buf[1]+j, packet_size);
-		err = ce147_i2c_read_multi(client, CMD_FWU_UPDATE, data, packet_size, &res, 1);
-		if (err < 0){
-			dev_err(&client->dev, "%s: fail: i2c_read for 0xf3, data: 0x%02x\n", __func__, data[0]);
+        err = ce147_i2c_read_multi(client, CMD_FWU_UPDATE, data, packet_size, &res, 1);
+        if(err < 0){
+				dev_err(&client->dev, "%s: fail: i2c_read for 0xf3, data: 0x%02x\n", __func__, data[0]);
 			err = -EIO;
 			goto out;
-		}
+        }
 		msleep(10);
 		j = j + 129;
-		//printk("ce147_update_fw: i2c_read for 0xf3, data: 0x%02x, count: %d\n", data[0], k);
+		//printk("ce147_update_fw: i2c_read for 0xf3, data: 0x%02x, count: %d\n", data[0], k);		
 	}
 
 	k = 0;
 	// [3] get fw status
 	do {
 		msleep(100);
-
+					
 		err = ce147_i2c_read_multi(client, CMD_FW_STATUS, NULL, 0, &res, 1);
-		if (err < 0){
-			dev_err(&client->dev, "%s: fail: i2c_read for 0xf5", __func__);
+        	if(err < 0){
+					dev_err(&client->dev, "%s: fail: i2c_read for 0xf5", __func__);				
 			err = -EIO;
 			goto out;
-		}
-		//printk("ce147_update_fw: i2c_read for 0xf5, data: 0x%02x\n", res);
+        } 
+		//printk("ce147_update_fw: i2c_read for 0xf5, data: 0x%02x\n", res);	
 
 		k++;
-		if (k == 500) break;
+		if(k == 500) break;
 	} while(res != 0x05);
 
 	msleep(500);
 
 	// [4] change from dump mode
 	err = ce147_i2c_write_multi(client, CMD_FW_DUMP, dump, 1);
-	if (err < 0){
-		dev_err(&client->dev, "%s: failed: i2c_write for 0xfb, 0x00", __func__);
+	if(err < 0){
+			dev_err(&client->dev, "%s: failed: i2c_write for 0xfb, 0x00", __func__);
 		err = -EIO;
 		goto out;
 	}
@@ -1383,24 +1220,24 @@ static int ce147_dump_fw(struct v4l2_subdev *sd)
 
 	// [5] check fw mode is in dump mode
 	err = ce147_i2c_read_multi(client, CMD_FW_DUMP, dump, 1, &res, 1);
-	if (err < 0){
-		dev_err(&client->dev, "%s: fail: i2c_read for 0xfb", __func__);
+	if(err < 0){
+			dev_err(&client->dev, "%s: fail: i2c_read for 0xfb", __func__); 			
 		err = -EIO;
 		goto out;
-	}
+	} 
 
-	if (res != 1){
-		dev_err(&client->dev, "%s: fail: res is %x", __func__, res);
+	if(res != 1){
+		dev_err(&client->dev, "%s: fail: res is %x", __func__, res); 			
 		err = -EIO;
 		goto out;
-	}
+	}	
 
 	msleep(100);
 
 	// [6] set dump start address
 	err = ce147_i2c_write_multi(client, CMD_FW_DUMP, addr, addr_len);
-	if (err < 0){
-		dev_err(&client->dev, "%s: failed: i2c_write for 0xfb, 0x03", __func__);
+	if(err < 0){
+			dev_err(&client->dev, "%s: failed: i2c_write for 0xfb, 0x03", __func__);
 		err = -EIO;
 		goto out;
 	}
@@ -1409,23 +1246,23 @@ static int ce147_dump_fw(struct v4l2_subdev *sd)
 	j = 0;
 
 	packet_num = *(fw_buf[2]) + (*(fw_buf[2]+1)<<8);
-	//printk("ce147_update_fw: i2c_read for 0xfb, packet_num: %d\n", packet_num);
+	//printk("ce147_update_fw: i2c_read for 0xfb, packet_num: %d\n", packet_num);	
 
 	dump[0] = 0x04;
 
 	// [7] dump firmware data
-	for (l = 0; l < packet_num; l++){
-		err = ce147_i2c_read_multi(client, CMD_FW_DUMP, dump, 1, data2, packet_size+1);
-		if (err < 0){
-			dev_err(&client->dev, "%s: fail: i2c_read for 0xfb,0x04\n", __func__);
+	for (l = 0; l < packet_num; l++){	
+        err = ce147_i2c_read_multi(client, CMD_FW_DUMP, dump, 1, data2, packet_size+1);
+        if(err < 0){
+				dev_err(&client->dev, "%s: fail: i2c_read for 0xfb,0x04\n", __func__);
 			err = -EIO;
 			goto out;
-		}
+        }
 		memcpy(fw_buf[3]+j, &data2[0], packet_size - 1);
-
+		
 		msleep(10);
 		j = j + 129;
-		//printk("ce147_update_fw: i2c_read for 0xfb, count: %d\n", l);
+		//printk("ce147_update_fw: i2c_read for 0xfb, count: %d\n", l);		
 	}
 
 	state->fw_dump_size = packet_num * packet_size;
@@ -1434,17 +1271,17 @@ static int ce147_dump_fw(struct v4l2_subdev *sd)
 		err = -EIO;
 		goto out;
 	}
-
+	
 	vfree(mbuf);
-
-	err = ce147_power_en(0);
-	if (err < 0){
-		dev_err(&client->dev, "%s: failed: ce147_power_en(off)\n", __func__);
-		return -EIO;
-	}
+	
+	err = ce147_power_en(0, sd);
+    if(err < 0){	
+			dev_err(&client->dev, "%s: failed: ce147_power_en(off)\n", __func__);
+	        return -EIO;
+    }
 
 	dev_err(&client->dev, "%s: ce147_power_en(off)\n", __func__);
-
+	
 	return 0;
 out:
 	vfree(mbuf);
@@ -1507,7 +1344,7 @@ static int ce147_set_preview_size(struct v4l2_subdev *sd)
 		case CE147_PREVIEW_QCIF:
 			ce147_regbuf_preview_size[0] = 0x1E;
 			break;
-		case CE147_PREVIEW_QVGA:
+        	case CE147_PREVIEW_QVGA:
 			ce147_regbuf_preview_size[0] = 0x02;
 			break;
 
@@ -1524,7 +1361,7 @@ static int ce147_set_preview_size(struct v4l2_subdev *sd)
 		case CE147_PREVIEW_D1:
 			ce147_regbuf_preview_size[0] = 0x20;
 			break;
-		case CE147_PREVIEW_720P:
+        	case CE147_PREVIEW_720P:
 			ce147_regbuf_preview_size[0] = 0x16;
 			ce147_regbuf_preview_size[1] = 0x02;
 			break;
@@ -1534,7 +1371,7 @@ static int ce147_set_preview_size(struct v4l2_subdev *sd)
 		default:
 			/* When running in image capture mode, the call comes here.
  		 	* Set the default video resolution - CE147_PREVIEW_VGA
- 		 	*/
+ 		 	*/ 
 			ce147_msg(&client->dev, "Setting preview resoution as VGA for image capture mode\n");
 			break;
 	}
@@ -1562,9 +1399,9 @@ static int ce147_set_preview_size(struct v4l2_subdev *sd)
     if(err < 0)
             return -EIO;
 
-	ce147_msg(&client->dev, "Done\n");
+	ce147_msg(&client->dev, "Done\n");	
 
-	return err;
+	return err;	
 }
 #if 0
 static int ce147_set_fps(struct v4l2_subdev *sd)
@@ -1579,7 +1416,7 @@ static int ce147_set_fps(struct v4l2_subdev *sd)
 		dev_err(&client->dev, "%s: Currently %d fps not supported.\n",__func__, state->fps);
 		return -EINVAL;
 	}
-
+	
 	ce147_regbuf_fps[0] = state->fps;
 
         err = ce147_i2c_write_multi(client, CMD_FPS, ce147_regbuf_fps, ce147_reglen_fps);
@@ -1595,11 +1432,11 @@ static int ce147_set_frame_rate(struct v4l2_subdev *sd)
 {
 	int err;
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
-	struct ce147_state *state = to_state(sd);
+	struct ce147_state *state = to_state(sd);	
 
 	unsigned char ce147_regbuf_fps[2] = { 0x1E, 0x00 };
 	unsigned int ce147_reglen_fps = 2;
-
+	
 	switch(state->fps)
 	{
 		case FRAME_RATE_7:
@@ -1629,11 +1466,11 @@ static int ce147_set_frame_rate(struct v4l2_subdev *sd)
 		dev_err(&client->dev, "%s: failed: i2c_write for set_frame_rate\n", __func__);
 		return -EIO;
 	}
-#if 0 //remove batch
+#if 0 //remove batch	
 	err = ce147_get_batch_reflection_status(sd);
 	if(err < 0){
 		dev_err(&client->dev, "%s: failed: ce147_get_batch_reflection_status for set_frame_rate\n", __func__);
-		return -EIO;
+		return -EIO; 
 	}
 #endif
 	ce147_msg(&client->dev, "%s: done\n", __func__);
@@ -1645,7 +1482,7 @@ static int ce147_set_anti_banding(struct v4l2_subdev *sd)
 {
 	int err;
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
-	struct ce147_state *state = to_state(sd);
+	struct ce147_state *state = to_state(sd);	
 
 	unsigned char ce147_regbuf_anti_banding[1] = { 0x02 };
 	unsigned int ce147_reglen_anti_banding = 1;
@@ -1703,7 +1540,7 @@ static int ce147_set_preview_stop(struct v4l2_subdev *sd)
 			dev_err(&client->dev, "%s: Wait for preview_stop failed\n", __func__ );
 			return err;
 		}
-		ce147_msg(&client->dev, "%s: preview_stop - wait time %d ms\n", __func__, err);
+		ce147_msg(&client->dev, "%s: preview_stop - wait time %d ms\n", __func__, err);	
 
 		state->runmode = CE147_RUNMODE_READY;
 	}
@@ -1719,7 +1556,7 @@ static int ce147_set_dzoom(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 
 	unsigned char ce147_buf_get_dzoom_status[2] = { 0x00, 0x00 };
 	unsigned int ce147_len_get_dzoom_status = 2;
-
+	
 	if(CE147_RUNMODE_RUNNING == state->runmode){
 		err = ce147_i2c_write_multi(client, CMD_SET_DZOOM, &ce147_buf_set_dzoom[ctrl->value], 1);
 		if(err < 0){
@@ -1757,7 +1594,7 @@ static int ce147_set_preview_start(struct v4l2_subdev *sd)
 
 	int count;
 	unsigned char ce147_buf_get_dzoom_status[2] = { 0x00, 0x00 };
-	unsigned int ce147_len_get_dzoom_status = 2;
+	unsigned int ce147_len_get_dzoom_status = 2;	
 
 	if( !state->pix.width || !state->pix.height || !state->fps){
 		return -EINVAL;
@@ -1773,7 +1610,7 @@ static int ce147_set_preview_start(struct v4l2_subdev *sd)
 		}
 	}
 	//Normal preview sequence
-	else
+	else 
 	{
 		/* Stop it if it is already running */
 		err = ce147_set_preview_stop(sd);
@@ -1843,7 +1680,7 @@ static int ce147_set_preview_start(struct v4l2_subdev *sd)
 				dev_err(&client->dev, "%s: failed: ce147_set_ev, err %d\n", __func__, err);
 				return -EIO;
 			}
-
+			
 			/* effect */
 			ctrl.value = state->effect;
 			err = ce147_set_effect(sd, &ctrl);
@@ -1859,7 +1696,7 @@ static int ce147_set_preview_start(struct v4l2_subdev *sd)
 				dev_err(&client->dev, "%s: failed: ce147_set_white_balance, err %d\n", __func__, err);
 				return -EIO;
 			}
-
+						
 		}
 		/* slow ae */
 		ctrl.value = state->hd_slow_ae;
@@ -1881,16 +1718,16 @@ static int ce147_set_preview_start(struct v4l2_subdev *sd)
 		err = ce147_get_batch_reflection_status(sd);
 		if(err < 0){
 			dev_err(&client->dev, "%s: failed: ce147_get_batch_reflection_status for set_frame_rate\n", __func__);
-			return -EIO;
+			return -EIO; 
 		}
 
-		/* Release AWB unLock */
+		/* Release AWB unLock */ 
 		err = ce147_set_awb_lock(sd, 0);
 		if(err < 0){
 			dev_err(&client->dev, "%s: failed: ce147_set_awb_lock, err %d\n", __func__, err);
 			return -EIO;
 		}
-
+					
 		/* Start preview */
 	        err = ce147_i2c_write_multi(client, CMD_PREVIEW, ce147_regbuf_preview_start, ce147_reglen_preview);
 	        if(err < 0){
@@ -1903,7 +1740,7 @@ static int ce147_set_preview_start(struct v4l2_subdev *sd)
 			dev_err(&client->dev, "%s: Wait for preview_start failed\n", __func__ );
 			return err;
 		}
-		ce147_msg(&client->dev, "%s: preview_start - wait time %d ms\n", __func__, err);
+		ce147_msg(&client->dev, "%s: preview_start - wait time %d ms\n", __func__, err);	
 	}
 
 	state->runmode = CE147_RUNMODE_RUNNING;
@@ -1930,7 +1767,7 @@ static int ce147_set_capture_size(struct v4l2_subdev *sd)
 		break;
 	case CE147_CAPTURE_W1MP: /* 1600x960 */
 		ce147_regbuf_capture_size[0] = 0x0E;
-		break;
+		break;		
 	case CE147_CAPTURE_2MP: /* 1600x1200 */
 		ce147_regbuf_capture_size[0] = 0x08;
 		break;
@@ -1947,7 +1784,7 @@ static int ce147_set_capture_size(struct v4l2_subdev *sd)
 		ce147_regbuf_capture_size[0] = 0x0B;
 		break;
 	default:
-		/* The framesize index was not set properly.
+		/* The framesize index was not set properly. 
  		 * Check s_fmt call - it must be for video mode. */
 		return -EINVAL;
 	}
@@ -1956,24 +1793,24 @@ static int ce147_set_capture_size(struct v4l2_subdev *sd)
 	err = ce147_i2c_write_multi(client, CMD_CAPTURE_SIZE, ce147_regbuf_capture_size, ce147_reglen_capture_size);
 	if(err < 0){
 		dev_err(&client->dev, "%s: failed: i2c_write for capture_resolution\n", __func__);
-		return -EIO;
+		return -EIO; 
 	}
 
 	//This is for postview
 	if(ce147_regbuf_capture_size[0] < 0x0C)
 	{
-		state->preview_size = CE147_PREVIEW_VGA;
+		state->preview_size = CE147_PREVIEW_VGA; 
 		//printk("[5B] ce147_set_capture_size: preview_size is VGA (%d)\n", state->preview_size);
 	}
 	else
 	{
-		state->preview_size = CE147_PREVIEW_WVGA;
-		//printk("[5B] ce147_set_capture_size: preview_size is WVGA (%d)\n", state->preview_size);
+		state->preview_size = CE147_PREVIEW_WVGA; 
+		//printk("[5B] ce147_set_capture_size: preview_size is WVGA (%d)\n", state->preview_size);		
 	}
 
 	//printk("ce147_set_capture_size: 0x%02x\n", index);
 
-	return 0;
+	return 0;	
 }
 
 static int ce147_set_ae_awb(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
@@ -1982,24 +1819,24 @@ static int ce147_set_ae_awb(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 
 	unsigned char ce147_buf_set_ae_awb[1] = { 0x00 };
-
+	
 	switch(ctrl->value)
 	{
-		case AE_LOCK_AWB_UNLOCK:
+		case AE_LOCK_AWB_UNLOCK: 
 			ce147_buf_set_ae_awb[0] = 0x01;
 			break;
 
-		case AE_UNLOCK_AWB_LOCK:
+		case AE_UNLOCK_AWB_LOCK: 
 			ce147_buf_set_ae_awb[0] = 0x10;
 			break;
-
-		case AE_LOCK_AWB_LOCK:
+			
+		case AE_LOCK_AWB_LOCK: 
 			ce147_buf_set_ae_awb[0] = 0x11;
 			break;
 
-		case AE_UNLOCK_AWB_UNLOCK:
+		case AE_UNLOCK_AWB_UNLOCK: 	
 		default:
-			ce147_buf_set_ae_awb[0] = 0x00;
+			ce147_buf_set_ae_awb[0] = 0x00;			
 			break;
 	}
 	err = ce147_i2c_write_multi(client, CMD_AE_WB_LOCK, ce147_buf_set_ae_awb, 1);
@@ -2108,11 +1945,15 @@ static int ce147_set_capture_exif(struct v4l2_subdev *sd)
 	unsigned int ce147_reglen_rot = 1;
 
 	unsigned char ce147_model_name[130] = {0x00,};
-	unsigned int ce147_reglen_model = 130;
+	unsigned int ce147_reglen_model = 130;	
 	
 	unsigned char ce147_gps_processing[130] = {0x00,};
 	unsigned int ce147_reglen_gps_processing = 130;	
-	unsigned char ce147_str_model[9] = "SCH-I500\0";
+#if !defined(CONFIG_ARIES_NTT)
+	unsigned char ce147_str_model[9] = "GT-I9000\0";
+#else // Modify NTTS1
+	unsigned char ce147_str_model[7] = "SC-02B\0";
+#endif
 #if 0
 	struct timeval curr_time;
 	struct rtc_time time;
@@ -2120,7 +1961,7 @@ static int ce147_set_capture_exif(struct v4l2_subdev *sd)
 	ce147_model_name[0] = 0x06;
 	ce147_model_name[1] = 0x09;
 
-	memcpy(ce147_model_name+2, ce147_str_model, sizeof(ce147_str_model));
+	memcpy(ce147_model_name+2, ce147_str_model, sizeof(ce147_str_model));	
 
 	ce147_gps_processing[0] = 0x10;
 	ce147_gps_processing[1] = 0x32;
@@ -2140,7 +1981,7 @@ static int ce147_set_capture_exif(struct v4l2_subdev *sd)
 	ce147_regbuf_exif[3] = time.tm_mday;
 	ce147_regbuf_exif[4] = time.tm_hour;
 	ce147_regbuf_exif[5] = time.tm_min;
-	ce147_regbuf_exif[6] = time.tm_sec;
+	ce147_regbuf_exif[6] = time.tm_sec;		
 #else
 	state->exifTimeInfo->tm_year += 1900;
 	state->exifTimeInfo->tm_mon += 1;
@@ -2150,7 +1991,7 @@ static int ce147_set_capture_exif(struct v4l2_subdev *sd)
 	ce147_regbuf_exif[3] = state->exifTimeInfo->tm_mday;
 	ce147_regbuf_exif[4] = state->exifTimeInfo->tm_hour;
 	ce147_regbuf_exif[5] = state->exifTimeInfo->tm_min;
-	ce147_regbuf_exif[6] = state->exifTimeInfo->tm_sec;
+	ce147_regbuf_exif[6] = state->exifTimeInfo->tm_sec;	
 #endif
 
 	rtc_time_to_tm(state->gpsInfo.gps_timeStamp, &gps_timestamp);
@@ -2199,13 +2040,13 @@ static int ce147_set_capture_exif(struct v4l2_subdev *sd)
 		dev_err(&client->dev, "%s: failed: i2c_write for gps longitude latitude\n", __func__);
 		return -EIO;
 	}
-
+	
 	err = ce147_i2c_write_multi(client, CMD_INFO_ALTITUDE, state->gpsInfo.ce147_altitude_buf, sizeof(state->gpsInfo.ce147_altitude_buf));
 	if(err < 0){
 		dev_err(&client->dev, "%s: failed: i2c_write for gps altitude\n", __func__);
 		return -EIO;
 	}
-
+		
 	err = ce147_i2c_write_multi(client, CMD_GPS_TIMESTAMP, ce147_regbuf_timestamp, ce147_reglen_timestamp);
 	if(err < 0){
 		dev_err(&client->dev, "%s: failed: i2c_write for gps timestamp\n", __func__);
@@ -2244,7 +2085,7 @@ static int ce147_set_jpeg_quality(struct v4l2_subdev *sd)
 	comp_ratio -= (100 - state->jpeg.quality) * 10;
 	ce147_regbuf_jpeg_comp_level[1] = comp_ratio & 0xFF;
 	ce147_regbuf_jpeg_comp_level[2] = (comp_ratio & 0xFF00) >> 8;
-
+	
 	ce147_msg(&client->dev, "Quality = %d, Max value = %d\n", state->jpeg.quality, comp_ratio);
 
 	comp_ratio = (comp_ratio * 9) / 10;  /* 10% range for final JPEG image size */
@@ -2282,7 +2123,7 @@ static int ce147_set_jpeg_quality(struct v4l2_subdev *sd)
 	else if(quality >= 51 && quality <= 60) { // 51 ~ 60
 		compressionRatio = 13; // 13%
 	}
-
+	
 	else if(quality >= 41 && quality <= 50) { // 41 ~ 50
 		compressionRatio = 12; // 12%
 	}
@@ -2298,14 +2139,14 @@ static int ce147_set_jpeg_quality(struct v4l2_subdev *sd)
 	else if(quality >= 11 && quality <= 20) { // 11 ~ 20
 		compressionRatio = 9; // 9%
 	}
-
+	
 	else if(quality >= 1 && quality <= 10) { // 1 ~ 10
 		compressionRatio = 8; // 8%
 	}
 
-	else {
+	else {		
 		dev_err(&client->dev, "%s: Invalid Quality(%d)\n", __func__, quality);
-
+		
 		return -1;
 	}
 
@@ -2314,13 +2155,13 @@ static int ce147_set_jpeg_quality(struct v4l2_subdev *sd)
 	ce147_regbuf_jpeg_comp_level[2] = ((compressionRatio * 100) & 0xFF00) >> 8;
 	ce147_regbuf_jpeg_comp_level[3] = (minimumCompressionRatio * 100) & 0xFF;
 	ce147_regbuf_jpeg_comp_level[4] = ((minimumCompressionRatio * 100) & 0xFF00) >> 8;
-
+	
 //	dev_err(&client->dev, "%s: compression ratio low byte: 0x%x, high byte: 0x%x\n", __func__, ce147_regbuf_jpeg_comp_level[1], ce147_regbuf_jpeg_comp_level[2]);
 
 //	dev_err(&client->dev, "%s: minimum compression ratio low byte: 0x%x, high byte: 0x%x\n", __func__, ce147_regbuf_jpeg_comp_level[3], ce147_regbuf_jpeg_comp_level[4]);
 
 	err = ce147_i2c_write_multi(client, CMD_JPEG_CONFIG, ce147_regbuf_jpeg_comp_level, ce147_reglen_jpeg_comp_level);
-
+	
 	if(err < 0){
 		dev_err(&client->dev, "%s: failed: i2c_write for jpeg_comp_level\n", __func__);
 
@@ -2395,7 +2236,7 @@ static int ce147_get_snapshot_data(struct v4l2_subdev *sd)
 		if(err < 0){
 			dev_err(&client->dev, "%s: failed: i2c_read for jpeg_framesize\n", __func__);
 			return -EIO;
-		}
+		}			
 		state->jpeg.main_size = jpeg_framesize[1] | (jpeg_framesize[2] << 8) | (jpeg_framesize[3] << 16);
 
 		ce147_info(&client->dev, "%s: JPEG main filesize = %d bytes\n", __func__, state->jpeg.main_size );
@@ -2408,7 +2249,7 @@ static int ce147_get_snapshot_data(struct v4l2_subdev *sd)
 		if(err < 0){
 			dev_err(&client->dev, "%s: failed: i2c_read for jpeg_framesize\n", __func__);
 			return -EIO;
-		}
+		}			
 		state->jpeg.thumb_size = jpeg_framesize[1] | (jpeg_framesize[2] << 8) | (jpeg_framesize[3] << 16);
 		}
 		else
@@ -2461,9 +2302,9 @@ static int ce147_set_capture_config(struct v4l2_subdev *sd, struct v4l2_control 
 	err = ce147_set_capture_size(sd);
 	if(err < 0){
 		dev_err(&client->dev, "%s: failed: i2c_write for capture_resolution\n", __func__);
-		return -EIO;
+		return -EIO; 
 	}
-
+	
 	/*
  	 * Set DZoom
  	 */
@@ -2475,21 +2316,10 @@ static int ce147_set_capture_config(struct v4l2_subdev *sd, struct v4l2_control 
 		return -EIO;
 		}
 	}
-
-	/*
- 	 * Set Flash //SecFeature.Camera aswoogi
- 	 */
-    
-	err = ce147_set_awb_lock(sd, 0);
-	if(err < 0){
-		dev_err(&client->dev, "%s: failed: ce147_set_awb_lock, err %d\n", __func__, err);
-		return -EIO;
-	}
-        ce147_set_preflash(sd, 1); //SecFeature.Camera aswoogi	
-        
+	
 	/*
  	 * Set AWB Lock
- 	 */
+ 	 */ 
 	err = ce147_set_awb_lock(sd, 1);
 	if(err < 0){
 		dev_err(&client->dev, "%s: failed: ce147_set_awb_lock, err %d\n", __func__, err);
@@ -2503,7 +2333,7 @@ static int ce147_set_capture_config(struct v4l2_subdev *sd, struct v4l2_control 
                 dev_err(&client->dev, "%s: failed: set_capture_cmd failed\n", __func__);
                 return err;
 	}
-
+	
 	return 0;
 }
 
@@ -2535,7 +2365,7 @@ static int ce147_set_capture_start(struct v4l2_subdev *sd, struct v4l2_control *
 	if(state->jpeg.enable){
 		/*
 		 * 4. Set EXIF information
-		 */
+		 */ 
 		err = ce147_set_capture_exif(sd);
 		if(err < 0){
 			dev_err(&client->dev, "%s: failed: i2c_write for exif\n", __func__);
@@ -2562,14 +2392,14 @@ static int ce147_set_capture_start(struct v4l2_subdev *sd, struct v4l2_control *
 	}
 	/*
 	 * 8. Get JPEG Main Data
-	 */
+	 */ 
 	err = ce147_get_snapshot_data(sd);
 	if(err < 0){
 		dev_err(&client->dev, "%s: failed: get_snapshot_data\n", __func__);
 		return err;
 	}
 	/*
-	 * 9. Wait for done
+	 * 9. Wait for done 
 	 */
 	err = ce147_waitfordone_timeout(client, 0x61, 0x00, 3000, POLL_TIME_MS);
 	if(err < 0){
@@ -2577,7 +2407,7 @@ static int ce147_set_capture_start(struct v4l2_subdev *sd, struct v4l2_control *
 		return err;
 	}
 	ce147_msg(&client->dev, "%s: data_transfer - wait time %d ms\n", __func__, err);
-
+	
 	return 0;
 }
 
@@ -2593,7 +2423,7 @@ static int ce147_get_focus_mode(struct i2c_client *client, unsigned char cmd, un
 	if(err < 0){
 		dev_err(&client->dev, "%s: failed: i2c_write for get_focus_mode\n", __func__);
 		return -EIO;
-	}
+	}	
 	//check whether af data is valid or not
 	for(count = 0; count < 600; count++)
 	{
@@ -2631,7 +2461,7 @@ static int ce147_set_af_softlanding(struct v4l2_subdev *sd)
 		if(err < 0){
 			dev_err(&client->dev, "%s: failed: i2c_write for auto_focus\n", __func__);
 			return -EIO;
-		}
+		}	
 		//check whether af data is valid or not
 		for(count = 0; count < 600; count++)
 		{
@@ -2657,12 +2487,7 @@ static int ce147_set_flash(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 	unsigned int ce147_len_set_flash = 2;
 	unsigned char ce147_buf_set_flash_manual[2] = { 0x00, 0x00 };
 	unsigned int ce147_len_set_flash_manual = 2;
-	unsigned char ce147_buf_set_flash_power_control[4] = {0x03,0x01,0x1D,0x0c};
-	unsigned int ce147_len_set_flash_power_control = 4;
-
-	 if(ctrl->value != FLASH_MODE_TORCH_ON && ctrl->value != FLASH_MODE_TORCH_OFF)
-            Flash_Mode = ctrl->value; //SecFeature.Camera aswoogi
-
+	
 	switch(ctrl->value)
 	{
 		case FLASH_MODE_OFF:
@@ -2677,154 +2502,35 @@ static int ce147_set_flash(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 			ce147_buf_set_flash[1] = 0x01;
 		break;
 
-		case FLASH_MODE_TORCH_ON://SecFeature.SPRINT by aswoogi
+		case FLASH_MODE_TORCH:
 			ce147_buf_set_flash_manual[1] = 0x01;
 		break;
 
-		case FLASH_MODE_TORCH_OFF://SecFeature.SPRINT by aswoogi
-		                ce147_buf_set_flash_manual[1] = 0x00;
-		                break;
-
-		case FLASH_MODE_BACKLIGHT_ON: //SecFeature.SPRINT by aswoogi
-		                ce147_buf_set_flash_power_control[1] = 0x00;
-		                ce147_buf_set_flash[1] = 0x01;
-                break;
-
 		default:
 			ce147_buf_set_flash[1] = 0x00;
+
 		break;
 	}
 
-        // set flash power
-        err = ce147_i2c_write_multi(client, CMD_SET_FLASH_POWER, ce147_buf_set_flash_power_control, ce147_len_set_flash_power_control);
-        if(err < 0){
-            dev_err(&client->dev, "%s: failed: i2c_write for set_flash_power\n", __func__);
-            return -EIO;
-        }
 	//need to modify flash off for torch mode
-	if(ctrl->value == FLASH_MODE_TORCH_ON ||ctrl->value == FLASH_MODE_TORCH_OFF)//SecFeature.SPRINT by aswoogi
+	if(ctrl->value == FLASH_MODE_OFF)
 	{
 		err = ce147_i2c_write_multi(client, CMD_SET_FLASH_MANUAL, ce147_buf_set_flash_manual, ce147_len_set_flash_manual);
 		if(err < 0){
 			dev_err(&client->dev, "%s: failed: i2c_write for set_flash\n", __func__);
 			return -EIO;
-		}
-		 ce147_msg(&client->dev, "%s: done, camcorder_flash: 0x%02x\n", __func__, ce147_buf_set_flash_manual[1]);
+		}	
 	}
-    else
-    {
-		err = ce147_i2c_write_multi(client, CMD_SET_FLASH, ce147_buf_set_flash, ce147_len_set_flash);
-		if(err < 0){
-			dev_err(&client->dev, "%s: failed: i2c_write for set_flash\n", __func__);
-			return -EIO;
-		}
-		ce147_msg(&client->dev, "%s: done, flash: 0x%02x\n", __func__, ce147_buf_set_flash[1]);
-    }
+
+	err = ce147_i2c_write_multi(client, CMD_SET_FLASH, ce147_buf_set_flash, ce147_len_set_flash);
+	if(err < 0){
+		dev_err(&client->dev, "%s: failed: i2c_write for set_flash\n", __func__);
+		return -EIO;
+	}
+	
+	ce147_msg(&client->dev, "%s: done, flash: 0x%02x\n", __func__, ce147_buf_set_flash[1]);
+
 	return 0;
-}
-
-static int ce147_set_preflash(struct v4l2_subdev *sd, int flash_mode) //SecFeature.Camera aswoogi
-{
-    int err;
-    struct i2c_client *client = v4l2_get_subdevdata(sd);
-
-    unsigned char ce147_buf_set_preflash[2] = { 0x01, 0x00 };
-    unsigned int ce147_len_set_preflash = 2;
-    unsigned char ce147_buf_set_preflash_manual[2] = { 0x00, 0x00 };
-    unsigned int ce147_len_set_preflash_manual = 2;
-    unsigned char ce147_buf_set_flash[2] = { 0x03, 0x00 };
-    unsigned int ce147_len_set_flash = 2;
-    unsigned char ce147_buf_set_flash_manual[2] = { 0x00, 0x00 };
-    unsigned int ce147_len_set_flash_manual = 2;
-    unsigned char ce147_buf_set_flash_off[2] = { 0x03, 0x00 };
-    unsigned int ce147_len_set_flash_off = 2;
-    unsigned char ce147_buf_set_preflash_off[2] = { 0x01, 0x00 };
-    unsigned int ce147_len_set_preflash_off = 2;
-    unsigned char ce147_buf_set_preflash_init[2] = { 0x02, 0x02 };//SecFeature.SPRINT by aswoogi
-    unsigned int ce147_len_set_preflash_init = 2;
-    unsigned char ce147_buf_set_preflash_init2[2] = { 0x02, 0x00 };//SecFeature.SPRINT by aswoogi
-    unsigned int ce147_len_set_preflash_init2 = 2;
-
-
-     	ce147_msg(&client->dev, "%s, %d\n", __func__, flash_mode);
-
-    switch(Flash_Mode)
-    {
-        case FLASH_MODE_OFF:
-            ce147_buf_set_preflash[1] = 0x00;
-            ce147_buf_set_flash[1] = 0x00;
-        break;
-
-        case FLASH_MODE_AUTO:
-            ce147_buf_set_preflash[1] = 0x02;
-            ce147_buf_set_flash[1] = 0x02;
-                	err = ce147_i2c_write_multi(client, 0x07, ce147_buf_set_preflash_init2, ce147_len_set_preflash_init2);//SecFeature.SPRINT by aswoogi
-                	if(err < 0){
-                		dev_err(&client->dev, "%s: failed: i2c_write for set_preflash\n", __func__);
-                		return -EIO;
-                	}
-        break;
-
-        case FLASH_MODE_ON:
-            ce147_buf_set_preflash[1] = 0x01;
-            ce147_buf_set_flash[1] = 0x01;
-                	err = ce147_i2c_write_multi(client, 0x07, ce147_buf_set_preflash_init2, ce147_len_set_preflash_init2);//SecFeature.SPRINT by aswoogi
-                	if(err < 0){
-                		dev_err(&client->dev, "%s: failed: i2c_write for set_preflash\n", __func__);
-                		return -EIO;
-                	}
-        break;
-
-		case FLASH_MODE_BACKLIGHT_ON://SecFeature.SPRINT by aswoogi
-			ce147_buf_set_preflash[1] = 0x01;
-			ce147_buf_set_flash[1] = 0x01;
-                	err = ce147_i2c_write_multi(client, 0x07, ce147_buf_set_preflash_init, ce147_len_set_preflash_init);
-                	if(err < 0){
-                		dev_err(&client->dev, "%s: failed: i2c_write for set_preflash\n", __func__);
-                		return -EIO;
-                	}
-		break;
-        default:
-            ce147_buf_set_preflash[1] = 0x00;
-            ce147_buf_set_flash[1] = 0x00;
-        break;
-    }
-
-    //need to modify flash off for torch mode
-        if(flash_mode == 0)
-        {
-            err = ce147_i2c_write_multi(client, CMD_SET_FLASH, ce147_buf_set_preflash, ce147_len_set_preflash);
-            if(err < 0){
-                dev_err(&client->dev, "%s: failed: i2c_write for set_preflash\n", __func__);
-                return -EIO;
-            }
-
-            err = ce147_i2c_write_multi(client, CMD_SET_FLASH, ce147_buf_set_flash_off, ce147_len_set_flash_off);
-            if(err < 0){
-                dev_err(&client->dev, "%s: failed: i2c_write for set_flash_off\n", __func__);
-                return -EIO;
-            }
-
-            dev_err(&client->dev, "%s: done, preflash: 0x%02x\n", __func__, ce147_buf_set_preflash[1]);
-        }
-        else
-        {
-            err = ce147_i2c_write_multi(client, CMD_SET_FLASH, ce147_buf_set_flash, ce147_len_set_flash);
-            if(err < 0){
-                dev_err(&client->dev, "%s: failed: i2c_write for set_flash\n", __func__);
-                return -EIO;
-            }
-
-            err = ce147_i2c_write_multi(client, CMD_SET_FLASH, ce147_buf_set_preflash_off, ce147_len_set_preflash_off);
-            if(err < 0){
-                dev_err(&client->dev, "%s: failed: i2c_write for set_preflash_off\n", __func__);
-                return -EIO;
-            }
-
-            ce147_msg(&client->dev, "%s: done, flash: 0x%02x\n", __func__, ce147_buf_set_flash[1]);
-        }
-
-    return 0;
 }
 
 static int ce147_set_effect(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
@@ -2834,7 +2540,7 @@ static int ce147_set_effect(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 
 	unsigned char ce147_buf_set_effect[2] = { 0x05, 0x00 };
 	unsigned int ce147_len_set_effect = 2;
-
+	
 	switch(ctrl->value)
 	{
 		case IMAGE_EFFECT_NONE:
@@ -2876,11 +2582,11 @@ static int ce147_set_effect(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 		dev_err(&client->dev, "%s: failed: i2c_write for set_effect\n", __func__);
 		return -EIO;
 	}
-#if 0 //remove batch
+#if 0 //remove batch	
 	err = ce147_get_batch_reflection_status(sd);
 	if(err < 0){
 		dev_err(&client->dev, "%s: failed: ce147_get_batch_reflection_status for set_effect\n", __func__);
-		return -EIO;
+		return -EIO; 
 	}
 #endif
 	ce147_msg(&client->dev, "%s: done\n", __func__);
@@ -2895,7 +2601,7 @@ static int ce147_set_saturation(struct v4l2_subdev *sd, struct v4l2_control *ctr
 
 	unsigned char ce147_buf_set_saturation[2] = { 0x06, 0x00 };
 	unsigned int ce147_len_set_saturation = 2;
-
+	
 	switch(ctrl->value)
 	{
 		case SATURATION_MINUS_2:
@@ -2929,11 +2635,11 @@ static int ce147_set_saturation(struct v4l2_subdev *sd, struct v4l2_control *ctr
 		dev_err(&client->dev, "%s: failed: i2c_write for set_saturation\n", __func__);
 		return -EIO;
 	}
-#if 0 //remove batch
+#if 0 //remove batch	
 	err = ce147_get_batch_reflection_status(sd);
 	if(err < 0){
 		dev_err(&client->dev, "%s: failed: ce147_get_batch_reflection_status for set_saturation\n", __func__);
-		return -EIO;
+		return -EIO; 
 	}
 #endif
 	ce147_msg(&client->dev, "%s: done, saturation: 0x%02x\n", __func__, ce147_buf_set_saturation[1]);
@@ -2948,7 +2654,7 @@ static int ce147_set_contrast(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 
 	unsigned char ce147_buf_set_contrast[2] = { 0x07, 0x00 };
 	unsigned int ce147_len_set_contrast = 2;
-
+	
 	switch(ctrl->value)
 	{
 		case CONTRAST_MINUS_2:
@@ -2982,11 +2688,11 @@ static int ce147_set_contrast(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 		dev_err(&client->dev, "%s: failed: i2c_write for set_contrast\n", __func__);
 		return -EIO;
 	}
-#if 0 //remove batch
+#if 0 //remove batch	
 	err = ce147_get_batch_reflection_status(sd);
 	if(err < 0){
 		dev_err(&client->dev, "%s: failed: ce147_get_batch_reflection_status for set_contrast\n", __func__);
-		return -EIO;
+		return -EIO; 
 	}
 #endif
 	ce147_msg(&client->dev, "%s: done, contrast: 0x%02x\n", __func__, ce147_buf_set_contrast[1]);
@@ -3001,7 +2707,7 @@ static int ce147_set_sharpness(struct v4l2_subdev *sd, struct v4l2_control *ctrl
 
 	unsigned char ce147_buf_set_saturation[2] = { 0x02, 0x00 };
 	unsigned int ce147_len_set_saturation = 2;
-
+	
 	switch(ctrl->value)
 	{
 		case SHARPNESS_MINUS_2:
@@ -3035,11 +2741,11 @@ static int ce147_set_sharpness(struct v4l2_subdev *sd, struct v4l2_control *ctrl
 		dev_err(&client->dev, "%s: failed: i2c_write for set_saturation\n", __func__);
 		return -EIO;
 	}
-#if 0 //remove batch
+#if 0 //remove batch	
 	err = ce147_get_batch_reflection_status(sd);
 	if(err < 0){
 		dev_err(&client->dev, "%s: failed: ce147_get_batch_reflection_status for set_saturation\n", __func__);
-		return -EIO;
+		return -EIO; 
 	}
 #endif
 	ce147_msg(&client->dev, "%s: done, sharpness: 0x%02x\n", __func__, ce147_buf_set_saturation[1]);
@@ -3054,14 +2760,14 @@ static int ce147_set_wdr(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 
 	unsigned char ce147_buf_set_wdr[1] = { 0x00 };
 	unsigned int ce147_len_set_wdr = 1;
-
+	
 	switch(ctrl->value)
 	{
 		case WDR_ON:
 			ce147_buf_set_wdr[0] = 0x01;
 		break;
-
-		case WDR_OFF:
+		
+		case WDR_OFF:			
 		default:
 			ce147_buf_set_wdr[0] = 0x00;
 
@@ -3086,7 +2792,7 @@ static int ce147_set_anti_shake(struct v4l2_subdev *sd, struct v4l2_control *ctr
 
 	unsigned char ce147_buf_set_anti_shake[1] = { 0x00 };
 	unsigned int ce147_len_set_anti_shake = 1;
-
+	
 	switch(ctrl->value)
 	{
 		case ANTI_SHAKE_STILL_ON:
@@ -3173,7 +2879,7 @@ static int ce147_set_object_tracking(struct v4l2_subdev *sd, struct v4l2_control
 	int count;
 	unsigned short x;
 	unsigned short y;
-
+	
 	struct ce147_state *state = to_state(sd);
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 
@@ -3181,19 +2887,19 @@ static int ce147_set_object_tracking(struct v4l2_subdev *sd, struct v4l2_control
 	unsigned int ce147_len_set_object_tracking = 7;
 	unsigned char ce147_buf_check_object_tracking[9] = { 0x00, };
 	unsigned int ce147_len_check_object_tracking = 9;
-	unsigned char ce147_buf_stop_lens[1] = { 0x00 };
+	unsigned char ce147_buf_stop_lens[1] = { 0x00 };	
 
 	/* get x,y touch position */
 	x = state->position.x;
 	y = state->position.y;
 
 	if(OT_START)
-	{
-		ce147_buf_set_object_tracking[3] = (x & 0x00FF);
+	{			
+		ce147_buf_set_object_tracking[3] = (x & 0x00FF);	
 		ce147_buf_set_object_tracking[4] = ((x	& 0xFF00) >> 8);
-		ce147_buf_set_object_tracking[5] = (y  & 0x00FF);
+		ce147_buf_set_object_tracking[5] = (y  & 0x00FF);	
 		ce147_buf_set_object_tracking[6] = ((y & 0xFF00) >> 8);
-
+	
 		err = ce147_i2c_write_multi(client, CMD_START_OT, ce147_buf_set_object_tracking, ce147_len_set_object_tracking);
 		if(err < 0){
 			dev_err(&client->dev, "%s: failed: i2c_write for object_tracking\n", __func__);
@@ -3211,14 +2917,14 @@ static int ce147_set_object_tracking(struct v4l2_subdev *sd, struct v4l2_control
 				return -EIO;
 			}
 			if(ce147_buf_check_object_tracking[0] == 0x02 || ce147_buf_check_object_tracking[0] == 0x03) break;
-		}
+		}	
 
 		/* OT status: searching an object in progess */
 		if(ce147_buf_check_object_tracking[0] == 0x01)
 		{
 			state->ot_status = 1;
-		}
-
+		}	
+		
 		/* OT status: an object is detected successfully */
 		else if(ce147_buf_check_object_tracking[0] == 0x02)
 		{
@@ -3242,7 +2948,7 @@ static int ce147_set_object_tracking(struct v4l2_subdev *sd, struct v4l2_control
 		if(err < 0){
 			dev_err(&client->dev, "%s: failed: ce147_start_continous_af for object_tracking\n", __func__);
 			return -EIO;
-		}
+		}	
 
 		err = ce147_i2c_write_multi(client, CMD_START_OT, ce147_buf_set_object_tracking, ce147_len_set_object_tracking);
 		if(err < 0){
@@ -3250,7 +2956,7 @@ static int ce147_set_object_tracking(struct v4l2_subdev *sd, struct v4l2_control
 			return -EIO;
 		}
 	}
-	ce147_msg(&client->dev, "%s: done\n", __func__);
+	ce147_msg(&client->dev, "%s: done\n", __func__);	
 
 	return 0;
 }
@@ -3276,8 +2982,8 @@ static int ce147_get_object_tracking(struct v4l2_subdev *sd, struct v4l2_control
 	if(ce147_buf_check_object_tracking[0] == 0x01)
 	{
 		state->ot_status = 1;
-	}
-
+	}	
+	
 	/* OT status: an object is detected successfully */
 	else if(ce147_buf_check_object_tracking[0] == 0x02)
 	{
@@ -3289,14 +2995,14 @@ static int ce147_get_object_tracking(struct v4l2_subdev *sd, struct v4l2_control
 	{
 		state->ot_status = 3;
 	}
-
+	
 	/* OT status: detected object is missing  */
 	else if(ce147_buf_check_object_tracking[0] == 0x04)
 	{
 		state->ot_status = 4;
-	}
-
-	ce147_msg(&client->dev, "%s: done\n", __func__);
+	}	
+	
+	ce147_msg(&client->dev, "%s: done\n", __func__);	
 
 	return 0;
 }
@@ -3308,7 +3014,7 @@ static int ce147_set_face_detection(struct v4l2_subdev *sd, struct v4l2_control 
 
 	unsigned char ce147_buf_set_fd[3] = { 0x00, 0x00, 0x00 };
 	unsigned int ce147_len_set_fd = 3;
-
+	
 	switch(ctrl->value)
 	{
 		case FACE_DETECTION_ON:
@@ -3336,7 +3042,7 @@ static int ce147_set_face_detection(struct v4l2_subdev *sd, struct v4l2_control 
 			ce147_buf_set_fd[2] = 0x00;
 		break;
 	}
-
+	
 	err = ce147_i2c_write_multi(client, CMD_SET_FACE_DETECTION, ce147_buf_set_fd, ce147_len_set_fd);
 	if(err < 0){
 		dev_err(&client->dev, "%s: failed: i2c_write for face_detection\n", __func__);
@@ -3355,7 +3061,7 @@ static int ce147_set_smart_auto(struct v4l2_subdev *sd, struct v4l2_control *ctr
 
 	unsigned char ce147_buf_set_smart_auto[1] = { 0x00 };
 	unsigned int ce147_len_set_smart_auto = 1;
-
+	
 	if(ctrl->value == SMART_AUTO_ON)
 	{
 		ce147_buf_set_smart_auto[0] = 0x01;
@@ -3374,14 +3080,14 @@ static int ce147_set_smart_auto(struct v4l2_subdev *sd, struct v4l2_control *ctr
 	}
 	else
 	{
-#if 0
+#if 0	
 		err = ce147_set_continous_af(sd, CAF_STOP);
 		if(err < 0){
 			dev_err(&client->dev, "%s: failed: CAF_START for smart_auto\n", __func__);
 			return -EIO;
 		}
 #endif
-
+		
 		ce147_buf_set_smart_auto[0] = 0x00;
 		err = ce147_i2c_write_multi(client, CMD_SET_SMART_AUTO, ce147_buf_set_smart_auto, ce147_len_set_smart_auto);
 		if(err < 0){
@@ -3399,7 +3105,7 @@ static int ce147_get_smart_auto_status(struct v4l2_subdev *sd, struct v4l2_contr
 {
 	int err;
 
-	struct ce147_state *state = to_state(sd);
+	struct ce147_state *state = to_state(sd);	
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 
 	unsigned char ce147_buf_smart_auto_status[2] = {0x00, 0x00};
@@ -3422,35 +3128,35 @@ static int ce147_get_smart_auto_status(struct v4l2_subdev *sd, struct v4l2_contr
 			case 0x00:
 				state->sa_status = SMART_AUTO_STATUS_LANDSCAPE;
 			break;
-
+		
 			case 0x01:
 				state->sa_status = SMART_AUTO_STATUS_PORTRAIT;
 			break;
-
+		
 			case 0x02:
 				state->sa_status = SMART_AUTO_STATUS_NIGHT;
 			break;
-
+		
 			case 0x03:
 				state->sa_status = SMART_AUTO_STATUS_PORTRAIT_NIGHT;
 			break;
-
+				
 			case 0x04:
 				state->sa_status = SMART_AUTO_STATUS_MACRO;
-			break;
-
+			break;			
+			
 			case 0x05:
 				state->sa_status = SMART_AUTO_STATUS_PORTRAIT_BACKLIT;
 			break;
-
+		
 			case 0x06:
 				state->sa_status = SMART_AUTO_STATUS_PORTRAIT_ANTISHAKE;
 			break;
-
+			
 			case 0x07:
 				state->sa_status = SMART_AUTO_STATUS_ANTISHAKE;
-			break;
-		}
+			break;	
+		}	
 	}
 
 	ce147_msg(&client->dev, "%s: done(smartauto_status:%d)\n", __func__,state->sa_status);
@@ -3472,30 +3178,30 @@ static int ce147_set_touch_auto_focus(struct v4l2_subdev *sd, struct v4l2_contro
 
 #if defined(CONFIG_ARIES_NTT) // Modify NTTS1
 	err = ce147_set_awb_lock(sd, 0);
-		if(err < 0){
-			dev_err(&client->dev, "%s: failed: ce147_set_awb_lock, err %d\n", __func__, err);
-			return -EIO;
+	if(err < 0){
+		dev_err(&client->dev, "%s: failed: ce147_set_awb_lock, err %d\n", __func__, err);
+		return -EIO;
 	}
 #endif
 	/* get x,y touch position */
 	x = state->position.x;
 	y = state->position.y;
-
+	
 	if(ctrl->value == TOUCH_AF_START)
 	{
 		ce147_buf_set_touch_af[0] = 0x01;
 		ce147_buf_set_touch_af[1] = 0x03;
 		ce147_buf_set_touch_af[2] = 0x00;
-		ce147_buf_set_touch_af[3] = ((x - 0x32) & 0x00FF);
+		ce147_buf_set_touch_af[3] = ((x - 0x32) & 0x00FF);	
 		ce147_buf_set_touch_af[4] = (((x - 0x32) & 0xFF00) >> 8);
-		ce147_buf_set_touch_af[5] = ((y - 0x32) & 0x00FF);
+		ce147_buf_set_touch_af[5] = ((y - 0x32) & 0x00FF);	
 		ce147_buf_set_touch_af[6] = (((y - 0x32) & 0xFF00) >> 8);
-		ce147_buf_set_touch_af[7] = ((x + 0x32) & 0x00FF);
+		ce147_buf_set_touch_af[7] = ((x + 0x32) & 0x00FF);	
 		ce147_buf_set_touch_af[8] = (((x + 0x32) & 0xFF00) >> 8);
-		ce147_buf_set_touch_af[9] = ((y + 0x32) & 0x00FF);
+		ce147_buf_set_touch_af[9] = ((y + 0x32) & 0x00FF);	
 		ce147_buf_set_touch_af[10] = (((y + 0x32) & 0xFF00) >> 8);
 	}
-
+	
 	err = ce147_i2c_write_multi(client, CMD_SET_TOUCH_AUTO_FOCUS, ce147_buf_set_touch_af, ce147_len_set_touch_af);
 	if(err < 0){
 		dev_err(&client->dev, "%s: failed: i2c_write for touch_auto_focus\n", __func__);
@@ -3522,36 +3228,30 @@ static int ce147_set_focus_mode(struct v4l2_subdev *sd, struct v4l2_control *ctr
 			ce147_buf_set_focus_mode[0] = 0x01;
 		break;
 
-		case FOCUS_MODE_FD:
+		case FOCUS_MODE_FACEDETECT:
 		break;
 
 		case FOCUS_MODE_AUTO:
 		case FOCUS_MODE_AUTO_DEFAULT:
-		case FOCUS_MODE_FD_DEFAULT:
+		case FOCUS_MODE_FACEDETECT_DEFAULT:
 		default:
 			ce147_buf_set_focus_mode[0] = 0x00;
 		break;
 	}
-#if 0
-	if(state->hd_preview_on == 1)
-	{
-		ce147_buf_set_focus_mode[0] = 0x07;
-	}
-#endif
 	state->cur_af_status = ce147_buf_set_focus_mode[0];
 
-	if(ctrl->value != FOCUS_MODE_FD)
+	if(ctrl->value != FOCUS_MODE_FACEDETECT)
 	{
 		if((state->pre_af_status != state->cur_af_status) \
-			|| (ctrl->value == FOCUS_MODE_MACRO_DEFAULT)||(ctrl->value == FOCUS_MODE_AUTO_DEFAULT)|| (ctrl->value == FOCUS_MODE_FD_DEFAULT))
+			|| (ctrl->value == FOCUS_MODE_MACRO_DEFAULT)||(ctrl->value == FOCUS_MODE_AUTO_DEFAULT)|| (ctrl->value == FOCUS_MODE_FACEDETECT_DEFAULT))
 		{
 #if defined(CONFIG_ARIES_NTT) // Modify NTTS1
-			             ce147_msg(&client->dev, "%s: unlock\n", __func__);
-			             err = ce147_set_awb_lock(sd, 0);
-			             if(err < 0){
-			              dev_err(&client->dev, "%s: failed: ce147_set_awb_unlock, err %d\n", __func__, err);
-			              return -EIO;
-			             }
+                	ce147_msg(&client->dev, "%s: unlock\n", __func__);		
+                	err = ce147_set_awb_lock(sd, 0);
+                	if(err < 0){
+                		dev_err(&client->dev, "%s: failed: ce147_set_awb_unlock, err %d\n", __func__, err);
+                		return -EIO;
+                	}
 #endif
 			//printk("[5B] ce147_set_focus_mode: %d\n", ce147_buf_set_focus_mode[0]);
 			err = ce147_get_focus_mode(client, CMD_SET_AUTO_FOCUS_MODE, ce147_buf_set_focus_mode);
@@ -3562,7 +3262,7 @@ static int ce147_set_focus_mode(struct v4l2_subdev *sd, struct v4l2_control *ctr
 			}
 		}
 		state->pre_af_status = state->cur_af_status;
-	}
+	}		
 	return 0;
 }
 
@@ -3573,7 +3273,7 @@ static int ce147_set_vintage_mode(struct v4l2_subdev *sd, struct v4l2_control *c
 
 	unsigned char ce147_buf_set_vintage_mode[4] = { 0x10, 0x01, 0x32, 0x00 };
 	unsigned int ce147_len_set_vintage_mode = 4;
-
+	
 	switch(ctrl->value)
 	{
 		case VINTAGE_MODE_OFF:
@@ -3593,7 +3293,7 @@ static int ce147_set_vintage_mode(struct v4l2_subdev *sd, struct v4l2_control *c
 		case VINTAGE_MODE_COOL:
 			ce147_buf_set_vintage_mode[3] = 0x01;
 		break;
-
+		
 		case VINTAGE_MODE_BNW:
 			ce147_buf_set_vintage_mode[3] = 0x03;
 		break;
@@ -3629,9 +3329,9 @@ static int ce147_set_face_beauty(struct v4l2_subdev *sd, struct v4l2_control *ct
 		case BEAUTY_SHOT_ON:
 			ce147_buf_set_face_beauty[1] = 0x01;
 			ce147_buf_set_face_beauty[2] = 0x32;
-			ce147_buf_set_face_beauty[3] = 0x00;
+			ce147_buf_set_face_beauty[3] = 0x01;
 		break;
-
+		
 		case BEAUTY_SHOT_OFF:
 		default:
 		break;
@@ -3649,6 +3349,12 @@ static int ce147_set_face_beauty(struct v4l2_subdev *sd, struct v4l2_control *ct
 	return 0;
 }
 
+#define CAMERA_WHITE_BALANCE_AUTO        0x00
+#define CAMERA_WHITE_BALANCE_SUNNY       0x00
+#define CAMERA_WHITE_BALANCE_CLOUDY      0x01
+#define CAMERA_WHITE_BALANCE_TUNGSTEN    0x02
+#define CAMERA_WHITE_BALANCE_FLUORESCENT 0x03
+#define CAMERA_WHITE_BALANCE_DEFAULT     CAMERA_WHITE_BALANCE_AUTO
 
 static int ce147_set_white_balance(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 {
@@ -3659,37 +3365,38 @@ static int ce147_set_white_balance(struct v4l2_subdev *sd, struct v4l2_control *
 	unsigned char ce147_buf_set_wb[2] = { 0x10, 0x00 };
 	unsigned int ce147_len_set_wb_auto = 1;
 	unsigned int ce147_len_set_wb = 2;
-
+	bool bDefaultChoosen = false;
+	
 	switch(ctrl->value)
 	{
 		case WHITE_BALANCE_AUTO:
-			ce147_buf_set_wb_auto[0] = 0x00;
+			ce147_buf_set_wb_auto[0] = CAMERA_WHITE_BALANCE_AUTO;
 		break;
 
 		case WHITE_BALANCE_SUNNY:
-			ce147_buf_set_wb[1] = 0x00;
+			ce147_buf_set_wb[1] = CAMERA_WHITE_BALANCE_SUNNY;
 		break;
 
 		case WHITE_BALANCE_CLOUDY:
-			ce147_buf_set_wb[1] = 0x01;
+			ce147_buf_set_wb[1] = CAMERA_WHITE_BALANCE_CLOUDY;
 		break;
 
 		case WHITE_BALANCE_TUNGSTEN:
-			ce147_buf_set_wb[1] = 0x02;
+			ce147_buf_set_wb[1] = CAMERA_WHITE_BALANCE_TUNGSTEN;
 		break;
 
 		case WHITE_BALANCE_FLUORESCENT:
-			ce147_buf_set_wb[1] = 0x03;
+			ce147_buf_set_wb[1] = CAMERA_WHITE_BALANCE_FLUORESCENT;
 		break;
 
 		default:
-			ce147_buf_set_wb_auto[0] = 0x00;
-			dev_err(&client->dev, "%s: setting default white balance: %d\n", __func__, ctrl->value);
-		//	return -EINVAL;
+		        bDefaultChoosen = true; /*bad workaround */
+		        ce147_buf_set_wb_auto[0] = CAMERA_WHITE_BALANCE_DEFAULT;
+			dev_err(&client->dev,"%s: white balance mode %d not defined assuming default white balance", __func__, ctrl->value);
 		break;
 	}
 
-	if(ctrl->value != WHITE_BALANCE_AUTO)
+	if((ctrl->value != WHITE_BALANCE_AUTO) && !bDefaultChoosen)
 	{
 		err = ce147_i2c_write_multi(client, CMD_SET_WB, ce147_buf_set_wb, ce147_len_set_wb);
 		if(err < 0){
@@ -3702,13 +3409,7 @@ static int ce147_set_white_balance(struct v4l2_subdev *sd, struct v4l2_control *
 		dev_err(&client->dev, "%s: failed: i2c_write for white_balance\n", __func__);
 		return -EIO;
 	}
-#if 0 //remove batch
-	err = ce147_get_batch_reflection_status(sd);
-	if(err < 0){
-		dev_err(&client->dev, "%s: failed: ce147_get_batch_reflection_status for white_balance\n", __func__);
-		return -EIO;
-	}
-#endif
+
 	ce147_msg(&client->dev, "%s: done\n", __func__);
 
 	return 0;
@@ -3753,18 +3454,18 @@ static int ce147_set_ev(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 		case EV_PLUS_2:
 			ce147_buf_set_ev[1] = 0x08;
 		break;
-
+		
 		case EV_PLUS_3:
 			ce147_buf_set_ev[1] = 0x09;
 		break;
 
 		case EV_PLUS_4:
 			ce147_buf_set_ev[1] = 0x0A;
-		break;
+		break;			
 
 		default:
-			dev_err(&client->dev, "%s: failed: to set_ev, enum: %d\n", __func__, ctrl->value);
-			return -EINVAL;
+		        ce147_buf_set_ev[1] = 0x06;
+                        dev_err(&client->dev,"%s: ev mode %d not defined assuming default ev", __func__, ctrl->value);
 		break;
 	}
 
@@ -3772,73 +3473,71 @@ static int ce147_set_ev(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 	{
 		ce147_buf_set_ev[1]+=ce147_ev_offset;
 	}
-	//printk("ce147_set_ev: set_ev:, data: 0x%02x\n", ce147_buf_set_ev[1]);
 
 	err = ce147_i2c_write_multi(client, CMD_SET_WB, ce147_buf_set_ev, ce147_len_set_ev);
 	if(err < 0){
 		dev_err(&client->dev, "%s: failed: i2c_write for set_ev, HD preview(%d)\n", __func__, state->hd_preview_on);
 		return -EIO;
 	}
-#if 0 //remove batch
-	err = ce147_get_batch_reflection_status(sd);
-	if(err < 0){
-		dev_err(&client->dev, "%s: failed: ce147_get_batch_reflection_status for set_ev\n", __func__);
-		return -EIO;
-	}
-#endif
 	ce147_msg(&client->dev, "%s: done\n", __func__);
 
 	return 0;
 }
 
+
+#define CAMERA_METERING_MATRIX   0x02
+#define CAMERA_METERING_CENTER   0x00
+#define CAMERA_METERING_SPOT     0x01
+#define CAMERA_METERING_HD       0x03
+#define CAMERA_METERING_DEFAULT  CAMERA_METERING_MATRIX
+
 static int ce147_set_metering(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 {
+
 	int err;
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 	struct ce147_state *state = to_state(sd);
 
 	unsigned char ce147_buf_set_metering[2] = { 0x00, 0x00 };
 	unsigned int ce147_len_set_metering = 2;
-
-	switch(ctrl->value)
-	{
-		case METERING_MATRIX:
-			ce147_buf_set_metering[1] = 0x02;
-		break;
-
-		case METERING_CENTER:
-			ce147_buf_set_metering[1] = 0x00;
-		break;
-
-		case METERING_SPOT:
-			ce147_buf_set_metering[1] = 0x01;
-		break;
-
-		default:
-//			dev_err(&client->dev, "%s: failed: to set_photometry, enum: %d\n", __func__, ctrl->value);
-//			return -EINVAL;
-			ce147_buf_set_metering[1] = 0x01;
-			dev_err(&client->dev, "%s: metering mode %d not defined assuming default metering", __func__, ctrl->value);
-		break;
-	}
-
+	
+	
+	/* when in HD mode we don't care about the other meterings*/
 	if(state->hd_preview_on)
 	{
-		ce147_buf_set_metering[1] = 0x03;
+		ce147_buf_set_metering[1] = CAMERA_METERING_HD;
 	}
+	else
+	{
+	        switch(ctrl->value)
+	        {
+		        case METERING_MATRIX:
+		        	ce147_buf_set_metering[1] = CAMERA_METERING_MATRIX;
+		                break;
 
+		        case METERING_CENTER:
+			        ce147_buf_set_metering[1] = CAMERA_METERING_CENTER;
+		                break;
+
+		        case METERING_SPOT:
+			        ce147_buf_set_metering[1] = CAMERA_METERING_SPOT;
+		                break;
+
+		        default:
+		                //default we asume that we want matrix metering 
+		                ce147_buf_set_metering[1] = CAMERA_METERING_DEFAULT;
+			        dev_err(&client->dev,"%s: metering mode %d not defined assuming default metering", __func__, ctrl->value);
+		                break;
+	         }
+
+	}
+	
 	err = ce147_i2c_write_multi(client, CMD_SET_WB, ce147_buf_set_metering, ce147_len_set_metering);
 	if(err < 0){
 		dev_err(&client->dev, "%s: failed: i2c_write for set_photometry\n", __func__);
 		return -EIO;
 	}
-#if 0 //remove batch
-	err = ce147_get_batch_reflection_status(sd);
-	if(err < 0){
-		dev_err(&client->dev, "%s: failed: ce147_get_batch_reflection_status for set_photometry\n", __func__);
-		return -EIO;
-	}
-#endif
+	
 	ce147_msg(&client->dev, "%s: done\n", __func__);
 
 	return 0;
@@ -3853,7 +3552,7 @@ static int ce147_set_iso(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 	unsigned int ce147_len_set_iso = 2;
 
 	ce147_msg(&client->dev, "%s: Enter : iso %d\n", __func__, ctrl->value);
-
+	
 	switch(ctrl->value)
 	{
 		case ISO_AUTO:
@@ -3884,16 +3583,11 @@ static int ce147_set_iso(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 			ce147_buf_set_iso[1] = 0x0C;
 		break;
 
-		/* This is additional setting for 'Fireworks' scene mode */
-		case ISO_FIREWORKS:
-			ce147_buf_set_iso[1] = 0x11;
-		break;
-
 		/* This is additional setting for Sports' scene mode */
 		case ISO_SPORTS:
 			ce147_buf_set_iso[1] = 0x12;
 		break;
-
+		
 		/* This is additional setting for 'Night' scene mode */
 		case ISO_NIGHT:
 			ce147_buf_set_iso[1] = 0x17;
@@ -3905,8 +3599,8 @@ static int ce147_set_iso(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 		break;
 
 		default:
-			dev_err(&client->dev, "%s: failed: to set_iso, enum: %d\n", __func__, ctrl->value);
-			return -EINVAL;
+		        ce147_buf_set_iso[1] = 0x06;
+			dev_err(&client->dev,"%s: ISO mode %d not defined assuming default ISO", __func__, ctrl->value);
 		break;
 	}
 
@@ -3915,13 +3609,7 @@ static int ce147_set_iso(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 		dev_err(&client->dev, "%s: failed: i2c_write for set_iso\n", __func__);
 		return -EIO;
 	}
-#if 0 //remove batch
-	err = ce147_get_batch_reflection_status(sd);
-	if(err < 0){
-		dev_err(&client->dev, "%s: failed: ce147_get_batch_reflection_status for set_iso\n", __func__);
-		return -EIO;
-	}
-#endif
+
 	ce147_msg(&client->dev, "%s: done, iso: 0x%02x\n", __func__, ce147_buf_set_iso[1]);
 
 	return 0;
@@ -3947,7 +3635,7 @@ static int ce147_set_gamma(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 			ce147_buf_set_uv[1] = 0x01;
 		}
 	}
-
+	
 	err = ce147_i2c_write_multi(client, CMD_SET_EFFECT, ce147_buf_set_gamma, ce147_len_set_gamma);
 	if(err < 0)
 	{
@@ -3961,7 +3649,7 @@ static int ce147_set_gamma(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 		dev_err(&client->dev, "%s: failed: i2c_write for ce147_set_gamma\n", __func__);
 		return -EIO;
 	}
-
+	
 	ce147_msg(&client->dev, "%s: done, gamma: 0x%02x, uv: 0x%02x, hd: %d\n", __func__, ce147_buf_set_gamma[1], ce147_buf_set_uv[1], state->hd_preview_on);
 
 	return 0;
@@ -3990,12 +3678,12 @@ static int ce147_set_slow_ae(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 		dev_err(&client->dev, "%s: failed: i2c_write for ce147_set_slow_ae\n", __func__);
 		return -EIO;
 	}
-
+	
 	ce147_msg(&client->dev, "%s: done, slow_ae: 0x%02x, hd: %d\n", __func__, ce147_buf_set_slow_ae[1], state->hd_preview_on);
 
 	return 0;
 }
-
+ 
 static int ce147_set_face_lock(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 {
 	int err;
@@ -4003,8 +3691,8 @@ static int ce147_set_face_lock(struct v4l2_subdev *sd, struct v4l2_control *ctrl
 
 	unsigned char ce147_buf_set_fd_lock[1] = { 0x00 };
 	unsigned int ce147_len_set_fd_lock = 1;
-
-	switch(ctrl->value)
+	
+	switch(ctrl->value) 
 	{
 		case FACE_LOCK_ON:
 			ce147_buf_set_fd_lock[0] = 0x01;
@@ -4019,7 +3707,7 @@ static int ce147_set_face_lock(struct v4l2_subdev *sd, struct v4l2_control *ctrl
 			ce147_buf_set_fd_lock[0] = 0x00;
 		break;
 	}
-
+	
 	err = ce147_i2c_write_multi(client, CMD_SET_FACE_LOCK, ce147_buf_set_fd_lock, ce147_len_set_fd_lock);
 	if(err < 0){
 		dev_err(&client->dev, "%s: failed: i2c_write for face_lock\n", __func__);
@@ -4038,10 +3726,7 @@ static int ce147_set_auto_focus(struct v4l2_subdev *sd, struct v4l2_control *ctr
 
 	unsigned char ce147_buf_set_af[1] = { 0x00 };
 	unsigned int ce147_len_set_af = 1;
-#if 0
-	unsigned char ce147_buf_get_af_status[1] = { 0x00 };
-	int count;
-#endif
+
 	if (ctrl->value)
 	{
 		//start af
@@ -4050,34 +3735,6 @@ static int ce147_set_auto_focus(struct v4l2_subdev *sd, struct v4l2_control *ctr
 			dev_err(&client->dev, "%s: failed: i2c_write for auto_focus\n", __func__);
 			return -EIO;
 		}
-#if 0
-		//status check whether AF searching is successful or not
-		for(count = 0; count < 600; count++)
-		{
-			msleep(10);
-			ce147_buf_get_af_status[0] = 0xFF;
-			err = ce147_i2c_read_multi(client, CMD_CHECK_AUTO_FOCUS_SEARCH, NULL, 0, ce147_buf_get_af_status, 1);
-			if(err < 0){
-				dev_err(&client->dev, "%s: failed: i2c_read for auto_focus\n", __func__);
-				return -EIO;
-			}
-			if(ce147_buf_get_af_status[0] == 0x05) continue;
-			if(ce147_buf_get_af_status[0] == 0x00 || ce147_buf_get_af_status[0] == 0x02) break;
-		}
-
-		if(ce147_buf_get_af_status[0] == 0x00)
-		{
-			if(err < 0){
-				dev_err(&client->dev, "%s: failed: AF is failed\n", __func__);
-				return -EIO;
-			}
-			ctrl->value =0;
-		}
-		else
-			ctrl->value = 1;
-
-		ce147_msg(&client->dev, "%s: done\n", __func__);
-#endif
 	}
 	else
 	{
@@ -4107,18 +3764,18 @@ static int ce147_get_auto_focus_status(struct v4l2_subdev *sd, struct v4l2_contr
 	if(err < 0){
 		dev_err(&client->dev, "%s: failed: i2c_read for auto_focus_status\n", __func__);
 		return -EIO;
-	}
+	}	
 	ctrl->value = ce147_buf_get_af_status[0];
 
 #if defined(CONFIG_ARIES_NTT) // Modify NTTS1
         if((ctrl->value == 2)&& !state->disable_aeawb_lock)
-		{
-			err = ce147_set_awb_lock(sd, 1);
-			if(err < 0){
-				dev_err(&client->dev, "%s: failed: ce147_set_awb_lock, err %d\n", __func__, err);
-				return -EIO;
-			}
-		}
+        {
+        	err = ce147_set_awb_lock(sd, 1);
+        	if(err < 0){
+        		dev_err(&client->dev, "%s: failed: ce147_set_awb_lock, err %d\n", __func__, err);
+        		return -EIO;
+        	}            
+        }
 #endif
 
 	//printk("ce147_get_auto_focus_status is called");
@@ -4134,9 +3791,9 @@ static void ce147_init_parameters(struct v4l2_subdev *sd)
 	state->strm.parm.capture.timeperframe.numerator = 1;
 	state->strm.parm.capture.capturemode = 0;
 
-//	state->framesize_index = CE147_PREVIEW_VGA;
+	state->framesize_index = CE147_PREVIEW_VGA;
 	state->fps = 30; /* Default value */
-
+	
 	state->jpeg.enable = 0;
 	state->jpeg.quality = 100;
 	state->jpeg.main_offset = 0;
@@ -4153,7 +3810,7 @@ static int ce147_get_fw_data(struct v4l2_subdev *sd)
 	struct ce147_state *state = to_state(sd);
 	int err = -EINVAL;
 
-	err = ce147_power_en(1);
+	err = ce147_power_en(1, sd);
     if(err < 0){
 			dev_err(&client->dev, "%s: failed: ce147_power_en(on)\n", __func__);
 	        return -EIO;
@@ -4164,9 +3821,9 @@ static int ce147_get_fw_data(struct v4l2_subdev *sd)
 		dev_err(&client->dev, "%s: Failed: Camera Initialization\n", __func__);
 		return -EIO;
 	}
-
-	//printk("ce147_get_fw_data: ce147_load_fw is ok\n");
-
+	
+	//printk("ce147_get_fw_data: ce147_load_fw is ok\n");	
+	
 	ce147_init_parameters(sd);
 
 	//printk("ce147_get_fw_data: ce147_init_parameters is ok\n");
@@ -4213,8 +3870,8 @@ static int ce147_get_fw_data(struct v4l2_subdev *sd)
 		return -EIO;
 	}
 
-	err = ce147_power_en(0);
-    if(err < 0){
+	err = ce147_power_en(0, sd);
+    if(err < 0){	
 			dev_err(&client->dev, "%s: failed: ce147_power_en(off)\n", __func__);
 	        return -EIO;
     }
@@ -4223,8 +3880,8 @@ static int ce147_get_fw_data(struct v4l2_subdev *sd)
 
 	ce147_info(&client->dev, "FW  Version: %d.%d\n", state->fw.major, state->fw.minor);
 	ce147_info(&client->dev, "PRM Version: %d.%d\n", state->prm.major, state->prm.minor);
-	ce147_info(&client->dev, "Date(y.m.d): %d.%d.%d\n", state->dateinfo.year, state->dateinfo.month, state->dateinfo.date);
-	ce147_info(&client->dev, "Sensor version: %d\n", state->sensor_version);
+	ce147_info(&client->dev, "Date(y.m.d): %d.%d.%d\n", state->dateinfo.year, state->dateinfo.month, state->dateinfo.date);	
+	ce147_info(&client->dev, "Sensor version: %d\n", state->sensor_version);	
 
 	return 0;
 }
@@ -4237,19 +3894,19 @@ static int ce147_reset(struct v4l2_subdev *sd)
 
 	dev_err(&client->dev, "%s: Enter \n", __func__);
 
-	err = ce147_power_en(0);
+	err = ce147_power_en(0, sd);
 	if(err < 0){
 		dev_err(&client->dev, "%s: failed: ce147_power_en(off)\n", __func__);
 		return -EIO;
-	}
+    	}
 
 	mdelay(5);
 
-	err = ce147_power_en(1);
+	err = ce147_power_en(1, sd);
 	if(err < 0){
 		dev_err(&client->dev, "%s: failed: ce147_power_en(off)\n", __func__);
 		return -EIO;
-	}
+    	}
 
 	err = ce147_load_fw(sd);		//ce147_init(sd);
 	if(err < 0){
@@ -4354,9 +4011,9 @@ static int ce147_g_fmt(struct v4l2_subdev *sd, struct v4l2_format *fmt)
 
 static int ce147_get_framesize_index(struct v4l2_subdev *sd);
 static int ce147_set_framesize_index(struct v4l2_subdev *sd, unsigned int index);
-/* Information received:
+/* Information received: 
  * width, height
- * pixel_format -> to be handled in the upper layer
+ * pixel_format -> to be handled in the upper layer 
  *
  * */
 static int ce147_s_fmt(struct v4l2_subdev *sd, struct v4l2_format *fmt)
@@ -4380,19 +4037,19 @@ static int ce147_s_fmt(struct v4l2_subdev *sd, struct v4l2_format *fmt)
 		state->pix.width = fmt->fmt.pix.width;
 		state->pix.height = fmt->fmt.pix.height;
 	}
-
+	
 	state->pix.pixelformat = fmt->fmt.pix.pixelformat;
 
 	if(fmt->fmt.pix.colorspace == V4L2_COLORSPACE_JPEG)
 		state->oprmode = CE147_OPRMODE_IMAGE;
 	else
-		state->oprmode = CE147_OPRMODE_VIDEO;
+		state->oprmode = CE147_OPRMODE_VIDEO; 
 
 
 	framesize_index = ce147_get_framesize_index(sd);
 
 	ce147_msg(&client->dev, "%s:framesize_index = %d\n", __func__, framesize_index);
-
+	
 	err = ce147_set_framesize_index(sd, framesize_index);
 	if(err < 0){
 		dev_err(&client->dev, "%s: set_framesize_index failed\n", __func__);
@@ -4423,8 +4080,8 @@ static int ce147_enum_framesizes(struct v4l2_subdev *sd, \
 					struct v4l2_frmsizeenum *fsize)
 {
 	struct ce147_state *state = to_state(sd);
-	int num_entries = sizeof(ce147_framesize_list)/sizeof(struct ce147_enum_framesize);
-	struct ce147_enum_framesize *elem;
+	int num_entries = sizeof(ce147_framesize_list)/sizeof(struct ce147_enum_framesize);	
+	struct ce147_enum_framesize *elem;	
 	int index = 0;
 	int i = 0;
 
@@ -4453,7 +4110,7 @@ static int ce147_enum_framesizes(struct v4l2_subdev *sd, \
 	return -EINVAL;
 }
 
-static int ce147_enum_frameintervals(struct v4l2_subdev *sd,
+static int ce147_enum_frameintervals(struct v4l2_subdev *sd, 
 					struct v4l2_frmivalenum *fival)
 {
 	int err = 0;
@@ -4486,7 +4143,7 @@ static int ce147_try_fmt(struct v4l2_subdev *sd, struct v4l2_format *fmt)
 	for(i = 0; i < num_entries; i++){
 		if(capture_fmts[i].pixelformat == fmt->fmt.pix.pixelformat)
 			return 0;
-	}
+	} 
 
 	return -EINVAL;
 }
@@ -4514,13 +4171,13 @@ static int ce147_s_parm(struct v4l2_subdev *sd, struct v4l2_streamparm *param)
 
 	if(param->parm.capture.timeperframe.numerator != state->strm.parm.capture.timeperframe.numerator ||
 			param->parm.capture.timeperframe.denominator != state->strm.parm.capture.timeperframe.denominator){
-
+		
 		int fps = 0;
 		int fps_max = 30;
 
 		if(param->parm.capture.timeperframe.numerator && param->parm.capture.timeperframe.denominator)
 			fps = (int)(param->parm.capture.timeperframe.denominator/param->parm.capture.timeperframe.numerator);
-		else
+		else 
 			fps = 0;
 
 		if(fps <= 0 || fps > fps_max){
@@ -4530,13 +4187,13 @@ static int ce147_s_parm(struct v4l2_subdev *sd, struct v4l2_streamparm *param)
 
 		param->parm.capture.timeperframe.numerator = 1;
 		param->parm.capture.timeperframe.denominator = fps;
-
+	
 		state->fps = fps;
 	}
 
-	/* Don't set the fps value, just update it in the state
+	/* Don't set the fps value, just update it in the state 
 	 * We will set the resolution and fps in the start operation (preview/capture) call */
-
+	
 	return err;
 }
 
@@ -4545,7 +4202,7 @@ static int ce147_s_parm(struct v4l2_subdev *sd, struct v4l2_streamparm *param)
  * This function should be called only after the s_fmt call,
  * which sets the required width/height value.
  *
- * It checks a list of available frame sizes and returns the
+ * It checks a list of available frame sizes and returns the 
  * most appropriate index of the frame size.
  *
  * Note: The index is not the index of the entry in the list. It is
@@ -4553,7 +4210,7 @@ static int ce147_s_parm(struct v4l2_subdev *sd, struct v4l2_streamparm *param)
  * done to add additional layer of error checking.
  *
  * The list is stored in an increasing order (as far as possible).
- * Hene the first entry (searching from the beginning) where both the
+ * Hene the first entry (searching from the beginning) where both the 
  * width and height is more than the required value is returned.
  * In case of no match, we return the last entry (which is supposed
  * to be the largest resolution supported.)
@@ -4580,27 +4237,27 @@ static int ce147_get_framesize_index(struct v4l2_subdev *sd)
 		if(state->oprmode == CE147_OPRMODE_IMAGE)
 		{
 			/* In case of image capture mode, if the given image resolution is not supported,
-			 * return the next higher image resolution. */
-			//printk("frmsize->width(%d) state->pix.width(%d) frmsize->height(%d) state->pix.height(%d)\n", frmsize->width, state->pix.width, frmsize->height, state->pix.height);
+ 			 * return the next higher image resolution. */
+ 			//printk("frmsize->width(%d) state->pix.width(%d) frmsize->height(%d) state->pix.height(%d)\n", frmsize->width, state->pix.width, frmsize->height, state->pix.height);
 			if(frmsize->width == state->pix.width && frmsize->height == state->pix.height)
 			{
 				//printk("frmsize->index(%d) \n", frmsize->index);
 				return frmsize->index;
 			}
 		}
-		else
+		else 
 		{
 			/* In case of video mode, if the given video resolution is not matching, use
-			 * the default rate (currently CE147_PREVIEW_VGA).
-			 */
-			//printk("frmsize->width(%d) state->pix.width(%d) frmsize->height(%d) state->pix.height(%d)\n", frmsize->width, state->pix.width, frmsize->height, state->pix.height);
+ 			 * the default rate (currently CE147_PREVIEW_VGA).
+ 			 */		 
+ 			//printk("frmsize->width(%d) state->pix.width(%d) frmsize->height(%d) state->pix.height(%d)\n", frmsize->width, state->pix.width, frmsize->height, state->pix.height);
 			if(frmsize->width == state->pix.width && frmsize->height == state->pix.height)
 			{
 				//printk("frmsize->index(%d) \n", frmsize->index);
 				return frmsize->index;
-			}
 		}
-	}
+	} 
+	} 
 	/* If it fails, return the default value. */
 	return (state->oprmode == CE147_OPRMODE_IMAGE) ? CE147_CAPTURE_3MP : CE147_PREVIEW_VGA;
 }
@@ -4620,14 +4277,14 @@ static int ce147_set_framesize_index(struct v4l2_subdev *sd, unsigned int index)
 	for(i = 0; i < (sizeof(ce147_framesize_list)/sizeof(struct ce147_enum_framesize)); i++)
 	{
 		if(ce147_framesize_list[i].index == index && ce147_framesize_list[i].mode == state->oprmode){
-			state->framesize_index = ce147_framesize_list[i].index;
+			state->framesize_index = ce147_framesize_list[i].index;	
 			state->pix.width = ce147_framesize_list[i].width;
 			state->pix.height = ce147_framesize_list[i].height;
 			ce147_info(&client->dev, "%s: Camera Res: %dx%d\n", __func__, state->pix.width, state->pix.height);
 			return 0;
-		}
-	}
-
+		} 
+	} 
+	
 	return -EINVAL;
 }
 
@@ -4637,6 +4294,7 @@ static int ce147_g_ctrl(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 	struct ce147_state *state = to_state(sd);
 	struct ce147_userset userset = state->userset;
 	int err = -ENOIOCTLCMD;
+	int offset = 134217728;
 
 	switch (ctrl->id) {
 	case V4L2_CID_EXPOSURE:
@@ -4678,7 +4336,7 @@ static int ce147_g_ctrl(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 		ctrl->value = state->jpeg.main_size;
 		err = 0;
 		break;
-
+	
 	case V4L2_CID_CAM_JPEG_MAIN_OFFSET:
 		ctrl->value = state->jpeg.main_offset;
 		err = 0;
@@ -4688,7 +4346,7 @@ static int ce147_g_ctrl(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 		ctrl->value = state->jpeg.thumb_size;
 		err = 0;
 		break;
-
+	
 	case V4L2_CID_CAM_JPEG_THUMB_OFFSET:
 		ctrl->value = state->jpeg.thumb_offset;
 		err = 0;
@@ -4697,8 +4355,8 @@ static int ce147_g_ctrl(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 	case V4L2_CID_CAM_JPEG_POSTVIEW_OFFSET:
 		ctrl->value = state->jpeg.postview_offset;
 		err = 0;
-		break;
-
+		break; 
+	
 	case V4L2_CID_CAM_JPEG_MEMSIZE:
 		ctrl->value = SENSOR_JPEG_SNAPSHOT_MEMSIZE;
 		err = 0;
@@ -4727,128 +4385,133 @@ static int ce147_g_ctrl(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 	case V4L2_CID_CAM_DATE_INFO_YEAR:
 		ctrl->value = state->dateinfo.year;
 		err = 0;
-		break;
+		break; 
 
 	case V4L2_CID_CAM_DATE_INFO_MONTH:
 		ctrl->value = state->dateinfo.month;
 		err = 0;
-		break;
+		break; 
 
 	case V4L2_CID_CAM_DATE_INFO_DATE:
 		ctrl->value = state->dateinfo.date;
 		err = 0;
-		break;
+		break; 
 
 	case V4L2_CID_CAM_SENSOR_VER:
 		ctrl->value = state->sensor_version;
 		err = 0;
-		break;
+		break; 
 
 	case V4L2_CID_CAM_FW_MINOR_VER:
 		ctrl->value = state->fw.minor;
 		err = 0;
-		break;
+		break; 
 
 	case V4L2_CID_CAM_FW_MAJOR_VER:
 		ctrl->value = state->fw.major;
 		err = 0;
-		break;
+		break; 
 
 	case V4L2_CID_CAM_PRM_MINOR_VER:
 		ctrl->value = state->prm.minor;
 		err = 0;
-		break;
+		break; 
 
 	case V4L2_CID_CAM_PRM_MAJOR_VER:
 		ctrl->value = state->prm.major;
 		err = 0;
-		break;
+		break; 
 
 	case V4L2_CID_CAM_SENSOR_MAKER:
 		ctrl->value = state->sensor_info.maker;
 		err = 0;
-		break;
+		break; 
 
 	case V4L2_CID_CAM_SENSOR_OPTICAL:
 		ctrl->value = state->sensor_info.optical;
 		err = 0;
-		break;
+		break; 		
 
 	case V4L2_CID_CAM_AF_VER_LOW:
 		ctrl->value = state->af_info.low;
 		err = 0;
-		break;
+		break; 
 
 	case V4L2_CID_CAM_AF_VER_HIGH:
 		ctrl->value = state->af_info.high;
 		err = 0;
-		break;
+		break; 	
 
 	case V4L2_CID_CAM_GAMMA_RG_LOW:
 		ctrl->value = state->gamma.rg_low;
 		err = 0;
-		break;
+		break; 
 
 	case V4L2_CID_CAM_GAMMA_RG_HIGH:
 		ctrl->value = state->gamma.rg_high;
 		err = 0;
-		break;
+		break; 		
 
 	case V4L2_CID_CAM_GAMMA_BG_LOW:
 		ctrl->value = state->gamma.bg_low;
 		err = 0;
-		break;
+		break; 
 
 	case V4L2_CID_CAM_GAMMA_BG_HIGH:
 		ctrl->value = state->gamma.bg_high;
 		err = 0;
-		break;
-
+		break; 	
+	
 	case V4L2_CID_CAM_GET_DUMP_SIZE:
 		ctrl->value = state->fw_dump_size;
 		err = 0;
-		break;
-
+		break;		
+	
 	case V4L2_CID_MAIN_SW_DATE_INFO_YEAR:
 		ctrl->value = state->main_sw_dateinfo.year;
 		err = 0;
-		break;
+		break; 
 
 	case V4L2_CID_MAIN_SW_DATE_INFO_MONTH:
 		ctrl->value = state->main_sw_dateinfo.month;
 		err = 0;
-		break;
+		break; 
 
 	case V4L2_CID_MAIN_SW_DATE_INFO_DATE:
 		ctrl->value = state->main_sw_dateinfo.date;
 		err = 0;
-		break;
+		break; 
 
 	case V4L2_CID_MAIN_SW_FW_MINOR_VER:
 		ctrl->value = state->main_sw_fw.minor;
 		err = 0;
-		break;
+		break; 
 
 	case V4L2_CID_MAIN_SW_FW_MAJOR_VER:
 		ctrl->value = state->main_sw_fw.major;
 		err = 0;
-		break;
+		break; 
 
 	case V4L2_CID_MAIN_SW_PRM_MINOR_VER:
 		ctrl->value = state->main_sw_prm.minor;
 		err = 0;
-		break;
+		break; 
 
 	case V4L2_CID_MAIN_SW_PRM_MAJOR_VER:
 		ctrl->value = state->main_sw_prm.major;
 		err = 0;
-		break;
+		break; 
+		
+	case V4L2_CID_ESD_INT:
+			dev_err(&client->dev,"%s don't bother with V4L2_CID_ESD_INT shit I am a stupid CE147 cam!",__func__);
+	        err = 0;
+	        break;
 
 	default:
-		dev_err(&client->dev, "%s: no such ctrl\n", __func__);
+		pr_err("%s: no such ctrl id(%d)\n", __func__, (ctrl->id - offset));
 		break;
 	}
-
+	
 	return err;
 }
 
@@ -4901,7 +4564,7 @@ static int ce147_s_ctrl(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 	case V4L2_CID_CAMERA_AEAWB_LOCK_UNLOCK:
 		err = ce147_set_ae_awb(sd, ctrl);
 		break;
-
+		
 	case V4L2_CID_CAMERA_FLASH_MODE:
 		err = ce147_set_flash(sd, ctrl);
 		break;
@@ -4922,7 +4585,7 @@ static int ce147_s_ctrl(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 
 	case V4L2_CID_CAMERA_WHITE_BALANCE:
 		//dev_err(&client->dev, "%s: V4L2_CID_CAMERA_WHITE_BALANCE, runmode %d	\n", __func__, state->runmode);
-
+		
 		if(state->runmode != CE147_RUNMODE_RUNNING)
 		{
 			state->wb= ctrl->value;
@@ -4930,7 +4593,7 @@ static int ce147_s_ctrl(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 		}
 		else
 		{
-			err = ce147_set_white_balance(sd, ctrl);
+			err = ce147_set_white_balance(sd, ctrl);		
 		}
 		break;
 
@@ -4944,9 +4607,9 @@ static int ce147_s_ctrl(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 		}
 		else
 		{
-			err = ce147_set_effect(sd, ctrl);
+			err = ce147_set_effect(sd, ctrl);		
 		}
-		break;
+		break;		
 
 	case V4L2_CID_CAMERA_ISO:
 		//dev_err(&client->dev, "%s: V4L2_CID_CAMERA_ISO, runmode %d	\n", __func__, state->runmode);
@@ -4958,7 +4621,7 @@ static int ce147_s_ctrl(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 		}
 		else
 		{
-			err = ce147_set_iso(sd, ctrl);
+			err = ce147_set_iso(sd, ctrl);		
 		}
 		break;
 
@@ -5007,18 +4670,18 @@ static int ce147_s_ctrl(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 	case V4L2_CID_CAMERA_FOCUS_MODE:
 		err = ce147_set_focus_mode(sd, ctrl);
 		break;
-
+		
 	case V4L2_CID_CAMERA_VINTAGE_MODE:
 		err = ce147_set_vintage_mode(sd, ctrl);
 		break;
-
+		
 	case V4L2_CID_CAMERA_BEAUTY_SHOT:
 		err = ce147_set_face_beauty(sd, ctrl);
 		break;
 
 	case V4L2_CID_CAMERA_FACEDETECT_LOCKUNLOCK:
 		err = ce147_set_face_lock(sd, ctrl);
-		break;
+		break;		
 
 	//need to be modified
 	case V4L2_CID_CAM_JPEG_QUALITY:
@@ -5037,10 +4700,10 @@ static int ce147_s_ctrl(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 	case V4L2_CID_CAMERA_TOUCH_AF_START_STOP:
 		err = ce147_set_touch_auto_focus(sd, ctrl);
 		break;
-
+		
 	case V4L2_CID_CAMERA_CAF_START_STOP:
 		err = ce147_set_continous_af(sd, ctrl);
-		break;
+		break;	
 
 	case V4L2_CID_CAMERA_OBJECT_POSITION_X:
 		state->position.x = ctrl->value;
@@ -5057,25 +4720,24 @@ static int ce147_s_ctrl(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 		break;
 
 	case V4L2_CID_CAMERA_SET_AUTO_FOCUS:
-	     ce147_set_preflash(sd, 0); //SecFeature.Camera aswoogi
 		err = ce147_set_auto_focus(sd, ctrl);
-		break;
+		break;		
 
 	case V4L2_CID_CAMERA_FRAME_RATE:
 		state->fps = ctrl->value;
-		err = 0;
+		err = 0;		
 		break;
-
+		
 	case V4L2_CID_CAMERA_ANTI_BANDING:
 		state->anti_banding= ctrl->value;
-		err = 0;
+		err = 0;		
 		break;
 
 	case V4L2_CID_CAMERA_SET_GAMMA:
 		state->hd_gamma = ctrl->value;
 		err = 0;
 		break;
-
+	
 	case V4L2_CID_CAMERA_SET_SLOW_AE:
 		state->hd_slow_ae = ctrl->value;
 		err = 0;
@@ -5090,8 +4752,8 @@ static int ce147_s_ctrl(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 	case V4L2_CID_CAM_CAPTURE:
 		err = ce147_set_capture_config(sd, ctrl);
 		break;
-
-	/* Used to start / stop preview operation.
+	
+	/* Used to start / stop preview operation. 
  	 * This call can be modified to START/STOP operation, which can be used in image capture also */
 	case V4L2_CID_CAM_PREVIEW_ONOFF:
 		if(ctrl->value)
@@ -5128,7 +4790,7 @@ static int ce147_s_ctrl(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 	case V4L2_CID_CAM_DUMP_FW:
 		err = ce147_dump_fw(sd);
 		break;
-
+		
 	case V4L2_CID_CAMERA_BATCH_REFLECTION:
 		err = ce147_get_batch_reflection_status(sd);
 		break;
@@ -5137,7 +4799,7 @@ static int ce147_s_ctrl(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 		state->exif_orientation_info = ctrl->value;
 		err = 0;
 		break;
-
+		
 	//s1_camera [ Defense process by ESD input ] _[
 	case V4L2_CID_CAMERA_RESET:
 		dev_err(&client->dev, "%s: V4L2_CID_CAMERA_RESET \n", __func__);
@@ -5148,20 +4810,24 @@ static int ce147_s_ctrl(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
 	case V4L2_CID_CAMERA_CHECK_DATALINE:
 		state->check_dataline = ctrl->value;
 		err = 0;
-		break;
+		break;	
 
 	case V4L2_CID_CAMERA_CHECK_DATALINE_STOP:
 		err = ce147_check_dataline_stop(sd);
 		break;
-
+		
 	case V4L2_CID_CAMERA_THUMBNAIL_NULL:
 		state->thumb_null = ctrl->value;
 		err = 0;
 		break;
 		
+	case V4L2_CID_CAMERA_RETURN_FOCUS:
+	        dev_err(&client->dev,"%s don't bother with V4L2_CID_CAMERA_RETURN_FOCUS shit I am a stupid CE147 cam!",__func__);
+	        err = 0;
+	        break;
+		
 	default:
-		dev_err(&client->dev, "%s: no such control\n", __func__);
-		err = 0; //SecFeature.Camera aswoogi
+		pr_err("%s: no such control ... I know nothing about %d! What do you want from me sucker? \n", __func__, ctrl->id);
 		break;
 	}
 
@@ -5196,7 +4862,7 @@ static int ce147_s_ext_ctrl(struct v4l2_subdev *sd, struct v4l2_ext_control *ctr
 	unsigned long temp = 0;
 	char *temp2;
 	struct gps_info_common * tempGPSType = NULL;
-
+	
 
 
 	state->exif_ctrl = 0;
@@ -5209,7 +4875,7 @@ static int ce147_s_ext_ctrl(struct v4l2_subdev *sd, struct v4l2_ext_control *ctr
 		state->gpsInfo.ce147_gps_buf[1] = tempGPSType ->dgree;
 		state->gpsInfo.ce147_gps_buf[2] = tempGPSType ->minute;
 		state->gpsInfo.ce147_gps_buf[3] = tempGPSType ->second;
-
+		
 		if((tempGPSType ->direction == 0)&&(tempGPSType ->dgree == 0)&&(tempGPSType ->minute == 0)&&(tempGPSType ->second == 0))
 			condition = 1;
 		else 
@@ -5224,7 +4890,7 @@ static int ce147_s_ext_ctrl(struct v4l2_subdev *sd, struct v4l2_ext_control *ctr
 		state->gpsInfo.ce147_gps_buf[5] = tempGPSType ->dgree;
 		state->gpsInfo.ce147_gps_buf[6] = tempGPSType ->minute;
 		state->gpsInfo.ce147_gps_buf[7] = tempGPSType ->second;
-
+		
 		if((tempGPSType ->direction == 0)&&(tempGPSType ->dgree == 0)&&(tempGPSType ->minute == 0)&&(tempGPSType ->second == 0))
 			condition = 1;
 		else 
@@ -5250,7 +4916,7 @@ static int ce147_s_ext_ctrl(struct v4l2_subdev *sd, struct v4l2_ext_control *ctr
 		state->gpsInfo.gps_timeStamp = temp;
 		err = 0;
 		break;
-
+		
 	case V4L2_CID_CAMERA_EXIF_TIME_INFO:
 		state->exifTimeInfo =(struct tm *)ctrl->reserved2[1];
 		err = 0;
@@ -5277,13 +4943,15 @@ static int ce147_init(struct v4l2_subdev *sd, u32 val)
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 	struct ce147_state *state = to_state(sd);
 	int err = -EINVAL;
-
+	//camera was just turned on, we wait for it 
+	msleep(200);
+        //ce147_power_en(1, sd);
 	err = ce147_load_fw(sd);
 	if(err < 0){
 		dev_err(&client->dev, "%s: Failed: Camera Initialization\n", __func__);
 		return -EIO;
 	}
-
+	
 	ce147_init_parameters(sd);
 
 	err = ce147_get_fw_version(sd);
@@ -5311,11 +4979,13 @@ static int ce147_init(struct v4l2_subdev *sd, u32 val)
 		dev_err(&client->dev, "%s: Failed: Reading Main SW Version\n",__func__);
 		return -EIO;
 	}
+	
+        //ce147_power_en(0, sd);
 
 	printk(KERN_DEBUG "FW  Version: %d.%d\n", state->fw.major, state->fw.minor);
 	printk(KERN_DEBUG "PRM Version: %d.%d\n", state->prm.major, state->prm.minor);
-	printk(KERN_DEBUG "Date(y.m.d): %d.%d.%d\n", state->dateinfo.year, state->dateinfo.month, state->dateinfo.date);
-	printk(KERN_DEBUG "Sensor version: %d\n", state->sensor_version);
+	printk(KERN_DEBUG "Date(y.m.d): %d.%d.%d\n", state->dateinfo.year, state->dateinfo.month, state->dateinfo.date);	
+	printk(KERN_DEBUG "Sensor version: %d\n", state->sensor_version);	
 
 	return 0;
 }
