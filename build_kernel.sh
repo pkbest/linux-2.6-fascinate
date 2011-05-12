@@ -43,7 +43,7 @@ rm -rf fascinate_voodoo5
 	tag="novoodoo"
 	mkdir fascinate_voodoo5
 	cp -a fascinate_initramfs fascinate_voodoo5/full-uncompressed
-	rm -rf fascinate_voodoo5/.git
+	rm -rf fascinate_voodoo5/full-uncompressed/.git
 #fi
 
 cd $WORK
