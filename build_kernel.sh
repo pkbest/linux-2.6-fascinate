@@ -41,6 +41,7 @@ rm -rf fascinate_voodoo5
 #		-u -w
 #else
 	tag="novoodoo"
+	mkdir fascinate_voodoo5
 	cp -a fascinate_initramfs fascinate_voodoo5/full-uncompressed
 	rm -rf fascinate_voodoo5/.git
 #fi
