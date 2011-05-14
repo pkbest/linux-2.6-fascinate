@@ -277,8 +277,8 @@ void touchkey_work_func(struct work_struct *p)
 							  KEYCODE_BIT], 0);
 			input_sync(touchkey_driver->input_dev);
 			//printk(" touchkey release keycode: %d\n", touchkey_keycode[data[0] & KEYCODE_BIT]);
-			printk(KERN_DEBUG "touchkey release keycode:%d \n",
-			       touchkey_keycode[data[0] & KEYCODE_BIT]);
+			//printk(KERN_DEBUG "touchkey release keycode:%d \n",
+			//       touchkey_keycode[data[0] & KEYCODE_BIT]);
 
 		} else {
 			if (touch_state_val == 1) {
@@ -297,9 +297,9 @@ void touchkey_work_func(struct work_struct *p)
 						 1);
 				input_sync(touchkey_driver->input_dev);
 				//printk(" touchkey press keycode: %d\n", touchkey_keycode[data[0] & KEYCODE_BIT]);
-				printk(KERN_DEBUG
-				       "touchkey press keycode:%d \n",
-				       touchkey_keycode[data[0] & KEYCODE_BIT]);
+				//printk(KERN_DEBUG
+				//       "touchkey press keycode:%d \n",
+				//       touchkey_keycode[data[0] & KEYCODE_BIT]);
 			}
 		}
 	}

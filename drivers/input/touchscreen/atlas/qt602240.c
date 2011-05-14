@@ -2486,7 +2486,7 @@ void check_chip_calibration(unsigned char one_touch_input_flag)
 			msleep(2); //0318 hugh  3-> 2
 			try_ctr++; /* timeout counter */
 			read_mem(diag_address, 2,data_buffer);
-			dprintk("[TSP] Waiting for diagnostic data to update, try %d\n", try_ctr);
+			//dprintk("[TSP] Waiting for diagnostic data to update, try %d\n", try_ctr);
 		}
 
 
@@ -2546,7 +2546,7 @@ void check_chip_calibration(unsigned char one_touch_input_flag)
 
 
 			/* print how many channels we counted */
-			dprintk("[TSP] Flags Counted channels: t:%d a:%d \n", tch_ch, atch_ch);
+			//dprintk("[TSP] Flags Counted channels: t:%d a:%d \n", tch_ch, atch_ch);
 
 			/* send page up command so we can detect when data updates next time,
 			 * page byte will sit at 1 until we next send F3 command */
@@ -3138,7 +3138,7 @@ void  get_message(struct work_struct * p)
 				fingerInfo[id].size_id= (id<<8)|size;
 				fingerInfo[id].pressure= 0;
 				bChangeUpDn= 1;
-				printk(KERN_DEBUG "[TSP]### Finger[%d] Up (%d,%d) - touch num is (%d)  status=0x%02x\n", id, fingerInfo[id].x, fingerInfo[id].y , --qt_touch_num_state[id], quantum_msg[1]);
+				//printk(KERN_DEBUG "[TSP]### Finger[%d] Up (%d,%d) - touch num is (%d)  status=0x%02x\n", id, fingerInfo[id].x, fingerInfo[id].y , --qt_touch_num_state[id], quantum_msg[1]);
 			}
 			else if ( (quantum_msg[1] & 0x80) && (quantum_msg[1] & 0x40) )	// Detect & Press
 			{
@@ -3161,7 +3161,7 @@ void  get_message(struct work_struct * p)
 				fingerInfo[id].x= (int16_t)x;
 				fingerInfo[id].y= (int16_t)y;
 				bChangeUpDn= 1;
-				printk(KERN_DEBUG "[TSP]### Finger[%d] Down (%d,%d) - touch num is (%d)   status=0x%02x\n", id, fingerInfo[id].x, fingerInfo[id].y , ++qt_touch_num_state[id], quantum_msg[1] );
+				//printk(KERN_DEBUG "[TSP]### Finger[%d] Down (%d,%d) - touch num is (%d)   status=0x%02x\n", id, fingerInfo[id].x, fingerInfo[id].y , ++qt_touch_num_state[id], quantum_msg[1] );
 			}
 			else if ( (quantum_msg[1] & 0x80) && (quantum_msg[1] & 0x10) )	// Detect & Move
 			{
@@ -3258,7 +3258,7 @@ void  get_message(struct work_struct * p)
 				else if( fingerInfo[i].pressure > 0 ) one_touch_input_flag++;//hugh 0312
 			}
 			input_sync(qt602240->input_dev);
-			pr_err("[Touch]pressed = %d, X = %d, Y = %d\n",fingerInfo[0].pressure,fingerInfo[0].x,fingerInfo[0].y);
+			//pr_err("[Touch]pressed = %d, X = %d, Y = %d\n",fingerInfo[0].pressure,fingerInfo[0].x,fingerInfo[0].y);
 		//	printk("\n");
 		//	printk("##### Multi-Touch Event[%d] Done!\n", amplitude );
 		}
