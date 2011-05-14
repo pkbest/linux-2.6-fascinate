@@ -6,7 +6,7 @@
 **
 ****************************************************************************/
 
-//#define _DEBUG
+#define _DEBUG
 /* HSDPA DUN & Internal FTP Throughput Support. @LDK@ */
 #define _HSDPA_DPRAM
 
@@ -2691,10 +2691,8 @@ static int dpram_shutdown(struct platform_Device *dev)
 	printk("\ndpram_shutdown ret : %d\n", ret);
 
 	unregister_dpram_driver();
-#ifdef _ENABLE_ERROR_DEVICE
 	unregister_dpram_err_device();
-#endif
-
+	
 	free_irq(IRQ_ONEDRAM_INT_N, NULL);
 	free_irq(IRQ_PHONE_ACTIVE, NULL);
 
