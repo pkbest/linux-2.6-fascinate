@@ -55,7 +55,7 @@ typedef struct pdp_arg {
  * Driver macros
  */
 
-#define MULTIPDP_ERROR			/* Define this for error messages */
+//#define MULTIPDP_ERROR			/* Define this for error messages */
 #undef USE_LOOPBACK_PING		/* Use loopback ping test */
 #undef LOOP_BACK_TEST			/* Use Loopback test via CH.31 */
 
@@ -75,7 +75,7 @@ typedef struct pdp_arg {
 #define EPRINTK(X...)		do { } while (0)
 #endif
 
-#define CONFIG_MULTIPDP_DEBUG 1
+//#define CONFIG_MULTIPDP_DEBUG 1
 
 #if (CONFIG_MULTIPDP_DEBUG > 0)
 #define DPRINTK(N, X...) \

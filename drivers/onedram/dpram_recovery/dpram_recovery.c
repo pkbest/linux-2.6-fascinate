@@ -18,7 +18,7 @@
 #include <linux/cdev.h>
 #include "dpram_recovery.h"
 
-#define _DEBUG_
+//#define _DEBUG_
 
 #ifdef _DEBUG_
 #define MSGCRIT "\x1b[1;31m"

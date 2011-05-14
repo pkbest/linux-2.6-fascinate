@@ -75,7 +75,7 @@ typedef struct pdp_arg {
 #define EPRINTK(X...)		do { } while (0)
 #endif
 
-#define CONFIG_MULTIPDP_DEBUG 1
+//#define CONFIG_MULTIPDP_DEBUG 1
 
 #if (CONFIG_MULTIPDP_DEBUG > 0)
 #define DPRINTK(N, X...) \
